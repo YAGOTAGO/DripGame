@@ -1,9 +1,6 @@
                                                                                   
- _ _ _     _                      _          _____ _             _      ____      _     
-| | | |___| |___ ___ _____ ___   | |_ ___   |  _  | |___ ___ ___| |_   |    \ ___|_|___ 
-| | | | -_| |  _| . |     | -_|  |  _| . |  |   __| | .'|   | -_|  _|  |  |  |  _| | . |
-|_____|___|_|___|___|_|_|_|___|  |_| |___|  |__|  |_|__,|_|_|___|_|    |____/|_| |_|  _|
-                                                                                   |_|                        
+# Welcome to Drip World
+
 Hopefully you enjoy the game as much as I enjoyed making it!
 All the art was done by my girlfriend Mina Stevens and of course all the code was done by me.
 
