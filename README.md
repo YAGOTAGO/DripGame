@@ -4,10 +4,10 @@
 ![](src/startBackground.png)
 
 Hopefully you enjoy the game as much as I enjoyed making it!
-All the art was done by my girlfriend Mina Stevens and of course all the code was done by Tiago Davies.
+All the art was done by **Mina Stevens** and of course all the code was done by **Tiago Davies**.
 
 ## Build Instructions:
-Compile ALL classes and Run the ExecuteGame.java.
+Compile **ALL** classes and Run the ExecuteGame.java.
 
 ## Controls:
 Press [s] to start. 
