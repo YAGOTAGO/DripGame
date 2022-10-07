@@ -2,7 +2,7 @@
 # Welcome to Drip World
 
 Hopefully you enjoy the game as much as I enjoyed making it!
-All the art was done by my girlfriend Mina Stevens and of course all the code was done by me.
+All the art was done by my girlfriend Mina Stevens and of course all the code was done by Tiago Davies.
 
 ## Build Instructions:
 Compile ALL classes and Run the ExecuteGame.java.
