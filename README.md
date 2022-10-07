@@ -1,6 +1,8 @@
                                                                                   
 # Welcome to Drip World
 
+![](src/startBackground.png)
+
 Hopefully you enjoy the game as much as I enjoyed making it!
 All the art was done by my girlfriend Mina Stevens and of course all the code was done by Tiago Davies.
 
