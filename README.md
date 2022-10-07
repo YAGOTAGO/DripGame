@@ -8,8 +8,8 @@ All the art was done by my girlfriend Mina Stevens and of course all the code wa
 Compile ALL classes and Run the ExecuteGame.java.
 
 ## Controls:
-•Press [s] to start. 
- Use the arrow keys to control the spaceship.
+Press [s] to start. 
+Use the arrow keys to control the spaceship.
 
 ## Objective
 The objective is to land on the landing platform perfectly straight.
