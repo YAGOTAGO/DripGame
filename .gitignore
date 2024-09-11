@@ -1,4 +1,4 @@
 .class
-src/.class
+src/**/*.class
 .classpath
 .project
