@@ -17,7 +17,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-public class FlyingDrone extends JComponent implements KeyListener {
+public class GameLogic extends JComponent implements KeyListener {
 	
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
@@ -114,7 +114,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 	private Image fuelCanister = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "fuelCanister.png");
 	private Image dripGuy = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripGuy.png");
 	private Image dripBall = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripBall.png");
-	
+
 	//coins
 	private CoinCollection coinCollection;
 	private AnimationRequest coinAnimation;
@@ -138,7 +138,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 	 * @author Tiago Davies
 	 * @artist Mina Stevens
 	 */
-	public FlyingDrone() {
+	public GameLogic() {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();

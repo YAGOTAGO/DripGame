@@ -13,7 +13,7 @@ public class DripBalls {
 }
 	
 	public void respawnBalls(int x, int y) {
-		FlyingDrone.dripBallX = x;
-		FlyingDrone.dripBallY = y;
+		GameLogic.dripBallX = x;
+		GameLogic.dripBallY = y;
 	}
 }

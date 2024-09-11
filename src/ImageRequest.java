@@ -27,14 +27,11 @@ public class ImageRequest {
     }   
    
     private String getExtension(FileExtension ext){
-        switch (ext) {
-            case PNG:
-                return ".png";
-            case JPEG:
-                return ".jpeg";
-            default:
-                return null;
-        }
+        return switch (ext) {
+            case PNG -> ".png";
+            case JPEG -> ".jpeg";
+            default -> null;
+        };
     }
 }
 
