@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -18,12 +17,11 @@ import javax.swing.JComponent;
 import javax.swing.Timer;
 import java.awt.geom.Rectangle2D;
 
-@SuppressWarnings("serial")
 public class FlyingDrone extends JComponent implements KeyListener {
 
 	protected Timer timer;
-	int h = ExecuteGame.h;
-	int w = ExecuteGame.w;
+	int h = ExecuteGame.SCREENHEIGHT;
+	int w = ExecuteGame.SCREENWIDTH;
 	private int initialY = 300;
 	private int initialX = 50;
 	private double x = initialX;
@@ -47,10 +45,6 @@ public class FlyingDrone extends JComponent implements KeyListener {
 	private int[] previousScores = new int[2];
 	private int i = 0;
 	private int fuelIntersect = 0;
-	private Image[] coins = new Image[11];
-	private Image[] platform = new Image[6];
-	private Image[] chest = new Image[12];
-	private Image[] explosion = new Image[7];
 	private int explosionX;
 	private int explosionY;
 	private boolean explosionON = false;
@@ -90,19 +84,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 
 	private boolean numberOn = false;
 	private int numberTimer = 0;
-	// all the coins
-	GoldCoins coin1 = new GoldCoins(250, 400);
-	GoldCoins coin2 = new GoldCoins(500, 400);
-	GoldCoins coin3 = new GoldCoins(600, 400);
-	GoldCoins coin4 = new GoldCoins(600, 150);
-	GoldCoins coin5 = new GoldCoins(500, 150);
-	GoldCoins coin6 = new GoldCoins(910, 480);
-	GoldCoins coin7 = new GoldCoins(910, 400);
-	GoldCoins coin8 = new GoldCoins(910, 320);
-	GoldCoins coin9 = new GoldCoins(250, 220);
-	GoldCoins coin10 = new GoldCoins(550, 270);
-	GoldCoins coin11 = new GoldCoins(910, 240);
-	GoldCoins coin12 = new GoldCoins(380, 270);
+
 	public static int initialDripBallX = 925;
 	public static int dripBallX = initialDripBallX;
 	public static int dripBallY = dripGuyY + 20;
@@ -132,9 +114,24 @@ public class FlyingDrone extends JComponent implements KeyListener {
 	private Image fuelCanister = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "fuelCanister.png");
 	private Image dripGuy = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripGuy.png");
 	private Image dripBall = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripBall.png");
-	// private Image explosion = Toolkit.getDefaultToolkit().getImage(userDir +
-	// fileSeparator + "explosion.jpg");
 
+	//coins
+	private CoinCollection coinCollection;
+	private AnimationRequest coinAnimation;
+	private Image[] coins;
+	
+	//platform
+	private AnimationRequest platformAnimation;
+	private Image[] platform;
+
+	//chest
+	private AnimationRequest chestAnimation;
+	private Image[] chest;
+
+	//explosion
+	private AnimationRequest explosionAnimation;
+	private Image[] explosion;
+	
 	/**
 	 * Program is a spaceship video game
 	 * 
@@ -145,66 +142,21 @@ public class FlyingDrone extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
-		coins[0] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold1.png");
-		coins[1] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold2.png");
-		coins[2] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold3.png");
-		coins[3] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold4.png");
-		coins[4] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold5.png");
-		coins[5] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold6.png");
-		coins[6] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold7.png");
-		coins[7] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold8.png");
-		coins[8] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold9.png");
-		coins[9] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "coinPNG" + fileSeparator + "Gold10.png");
-		platform[0] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "PlatformLights" + fileSeparator + "landing1.png");
-		platform[1] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "PlatformLights" + fileSeparator + "landing2.png");
-		platform[2] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "PlatformLights" + fileSeparator + "landing3.png");
-		platform[3] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "PlatformLights" + fileSeparator + "landing4.png");
-		chest[0] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest1.png");
-		chest[1] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest2.png");
-		chest[2] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest3.png");
-		chest[3] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest4.png");
-		chest[4] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest5.png");
-		chest[5] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest6.png");
-		chest[6] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest7.png");
-		chest[7] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest8.png");
-		chest[8] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "chest" + fileSeparator + "Chest9.png");
-		explosion[0] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion1.png");
-		explosion[1] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion2.png");
-		explosion[2] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion3.png");
-		explosion[3] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion4.png");
-		explosion[4] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion5.png");
-		explosion[5] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion6.png");
-		explosion[6] = Toolkit.getDefaultToolkit()
-				.getImage(userDir + fileSeparator + "explosion" + fileSeparator + "explosion7.png");
+
+		coinCollection = new CoinCollection();
+
+		coinAnimation = new AnimationRequest("coin", "Gold", FileExtension.PNG, 10);
+		coins = coinAnimation.getFrames();
+		
+		platformAnimation = new AnimationRequest("platform", "landing", FileExtension.PNG, 4);
+		platform = platformAnimation.getFrames();
+
+		chestAnimation = new AnimationRequest("chest", "chest", FileExtension.PNG, 9);
+		chest = chestAnimation.getFrames();
+		
+		explosionAnimation = new AnimationRequest("explosion", "explosion", FileExtension.PNG, 7);
+		explosion = explosionAnimation.getFrames();
+
 		addKeyListener(this);
 		setFocusable(true);
 	}
@@ -271,55 +223,15 @@ public class FlyingDrone extends JComponent implements KeyListener {
 			// Drawing the rotated image at the required drawing locations
 			g.drawImage(op.filter(in, null), (int) x - 13, (int) y - 3, this);
 
-			// Bounding rectangle for boundary collision
-			// Graphics2D g2 = (Graphics2D)g;
-			// rect is spaceship
 			ship.setRect(x, y, 45.0, 55);
-			// AffineTransform at = AffineTransform.getRotateInstance(rotationRequired,
-			// rect.getX() +rect.width/2, rect.getY() + rect.height/2);
 			// commented out but would should hitbox
 			// g2.setColor(Color.RED);
 			// g2.draw(at.createTransformedShape(rect));
 
-			// gold coins
-
-			if (!(coin1.touchCoins(coin1.coinBounds, ship)) && coin1.touch == false)
-				g.drawImage(coins[(int) t], 250, 400, this);
-
-			if (!(coin2.touchCoins(coin2.coinBounds, ship)) && coin2.touch == false)
-				g.drawImage(coins[(int) t], 500, 400, this);
-
-			if (!(coin3.touchCoins(coin3.coinBounds, ship)) && coin3.touch == false)
-				g.drawImage(coins[(int) t], 600, 400, this);
-
-			if (!(coin4.touchCoins(coin4.coinBounds, ship)) && coin4.touch == false)
-				g.drawImage(coins[(int) t], 600, 150, this);
-
-			if (!(coin5.touchCoins(coin5.coinBounds, ship)) && coin5.touch == false)
-				g.drawImage(coins[(int) t], 500, 150, this);
-
-			if (!(coin9.touchCoins(coin9.coinBounds, ship)) && coin9.touch == false)
-				g.drawImage(coins[(int) t], 250, 220, this);
-
-			if (!(coin10.touchCoins(coin10.coinBounds, ship)) && coin10.touch == false)
-				g.drawImage(coins[(int) t], 550, 270, this);
-
-			if (!(coin12.touchCoins(coin12.coinBounds, ship)) && coin12.touch == false)
-				g.drawImage(coins[(int) t], 380, 270, this);
+			score += (100 * coinCollection.hitCoins(ship)); //increase value per ht coin
+			coinCollection.drawCoins(coins[(int)t],g, this); // draw non hit coins
 
 			if (level != 3) {
-				if (!(coin6.touchCoins(coin6.coinBounds, ship)) && coin6.touch == false)
-					g.drawImage(coins[(int) t], 910, 480, this);
-
-				if (!(coin11.touchCoins(coin11.coinBounds, ship)) && coin11.touch == false)
-					g.drawImage(coins[(int) t], 910, 240, this);
-
-				if (!(coin7.touchCoins(coin7.coinBounds, ship)) && coin7.touch == false)
-					g.drawImage(coins[(int) t], 910, 400, this);
-
-				if (!(coin8.touchCoins(coin8.coinBounds, ship)) && coin8.touch == false)
-					g.drawImage(coins[(int) t], 910, 320, this);
-
 				// fuel icon interaction
 				if (!touchFuel() && fuelIntersect == 0) {
 					g.drawImage(fuelPic, 910, 550, this);
@@ -531,18 +443,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 
 	public void resetGame(int level) {
 
-		coin1.setTouch(false);
-		coin2.setTouch(false);
-		coin3.setTouch(false);
-		coin4.setTouch(false);
-		coin5.setTouch(false);
-		coin6.setTouch(false);
-		coin7.setTouch(false);
-		coin8.setTouch(false);
-		coin9.setTouch(false);
-		coin10.setTouch(false);
-		coin11.setTouch(false);
-		coin12.setTouch(false);
+		coinCollection.resetCoins();
 
 		xVelocity = 0;
 		yVelocity = 0;
@@ -728,18 +629,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 					if (i < 3) {
 						i++;
 					}
-					coin1.setTouch(false);
-					coin2.setTouch(false);
-					coin3.setTouch(false);
-					coin4.setTouch(false);
-					coin5.setTouch(false);
-					coin6.setTouch(false);
-					coin7.setTouch(false);
-					coin8.setTouch(false);
-					coin9.setTouch(false);
-					coin10.setTouch(false);
-					coin11.setTouch(false);
-					coin12.setTouch(false);
+					coinCollection.resetCoins();
 					level = level + 1;
 					nextLevel(level);
 				}
