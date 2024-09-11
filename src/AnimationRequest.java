@@ -22,7 +22,7 @@ public class AnimationRequest extends ImageRequest {
             frames[i] = getImage(i+1);
         }
     }
-
+    
     public Image[] getFrames(){ return frames; }
 }
 

@@ -1,12 +1,12 @@
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.geom.Rectangle2D;
+import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
 public class CoinCollection {
     
-    private static ArrayList<Coin> coins;
+    private ArrayList<Coin> coins;
     private ArrayList<Coin> coinsToDraw;
     private int numHitCoins = 0;
 
@@ -27,10 +27,10 @@ public class CoinCollection {
         coinsToDraw = new ArrayList<>(coins);
     }
 
-    public int hitCoins(Rectangle2D target){
+    public int hitCoins(Rectangle target){
         numHitCoins = 0;
         for (Coin coin : coins) {
-            if(coin.setHit(target)){
+            if(coin.checkHit(target)){
                 coinsToDraw.remove(coin);
                 numHitCoins++;
             }
@@ -40,10 +40,10 @@ public class CoinCollection {
     
     public void resetCoins(){
         for (Coin coin : coins) {
-            coin.hasBeenHit = false;
+            coin.resetHit();
         }
     }
-
+    
     public void drawCoins(Image currCoin, Graphics g, ImageObserver obsv){
         for(Coin coin : coinsToDraw){
             coin.drawCoin(currCoin, g, obsv);

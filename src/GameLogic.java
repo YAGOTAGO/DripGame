@@ -81,7 +81,7 @@ public class GameLogic extends JComponent implements KeyListener {
 	private double gravity = .3;
 	private double yVelCoefficient = .4;
 	private double xVelCoefficient = .4;
-
+	
 	private boolean numberOn = false;
 	private int numberTimer = 0;
 
@@ -156,6 +156,8 @@ public class GameLogic extends JComponent implements KeyListener {
 		
 		explosionAnimation = new AnimationRequest("explosion", "explosion", FileExtension.PNG, 7);
 		explosion = explosionAnimation.getFrames();
+
+
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -410,11 +412,8 @@ public class GameLogic extends JComponent implements KeyListener {
 			return true;
 		else if (rect.intersects(750, yDrip + 10, 30, 40) && level >= 2)
 			return true;
-		else if (rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2)
-			return true;
-		else
-			return false;
-
+		else return rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2;
+		
 	}
 
 	public boolean haveWon() {

@@ -2,15 +2,15 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 public class ImageRequest {
-    protected static final Toolkit toolkit = Toolkit.getDefaultToolkit();
-    protected static final String fileSeparator = System.getProperty("file.separator");
-	protected static final String userDir = System.getProperty("user.dir") + fileSeparator;
-    protected static final String imageDir = "images";
+    protected final Toolkit toolkit = Toolkit.getDefaultToolkit();
+    protected final String fileSeparator = System.getProperty("file.separator");
+	protected final String userDir = System.getProperty("user.dir") + fileSeparator;
+    protected final String imageDir = "images";
     protected String extension = "";
 
     protected String folder = "";
     protected String fileName;
-
+    
     public ImageRequest(String folder, String fileName, FileExtension extension){
         this.folder = folder;
         this.fileName = fileName;
