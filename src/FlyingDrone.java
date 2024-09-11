@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,10 +16,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
-import java.awt.geom.Rectangle2D;
 
 public class FlyingDrone extends JComponent implements KeyListener {
-
+	
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
 	int w = ExecuteGame.SCREENWIDTH;
@@ -114,7 +114,7 @@ public class FlyingDrone extends JComponent implements KeyListener {
 	private Image fuelCanister = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "fuelCanister.png");
 	private Image dripGuy = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripGuy.png");
 	private Image dripBall = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripBall.png");
-
+	
 	//coins
 	private CoinCollection coinCollection;
 	private AnimationRequest coinAnimation;

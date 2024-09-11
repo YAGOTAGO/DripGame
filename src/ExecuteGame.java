@@ -10,7 +10,7 @@ public class ExecuteGame extends JFrame {
 		JFrame frame = new JFrame("SpaceShip Game");
 		FlyingDrone fly = new FlyingDrone();
 		
-        frame.setSize(SCREENWIDTH,SCREENHEIGHT);
+        frame.setSize(SCREENWIDTH, SCREENHEIGHT);
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
