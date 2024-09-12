@@ -1,8 +1,11 @@
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 public final class ImageHelper {
     private static final Toolkit TOOLKIT = Toolkit.getDefaultToolkit();
@@ -22,6 +25,22 @@ public final class ImageHelper {
         }
         return img;
     }   
+
+    public static BufferedImage getBufferedImage(String folder, String fileName){
+        BufferedImage img = null;
+        String path = USER_DIR + IMAGE_DIR + FILE_SEPERATOR + folder + FILE_SEPERATOR + fileName;
+        File imgFile = new File(path);
+        
+        if(!imgFile.exists()) {System.err.println("Buffered Img not found: " + path);}
+        try {
+            img = ImageIO.read(imgFile);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+               
+        if(img == null){System.err.println("ImageHelper get Buffered Image NULL");}
+        return img;
+    }
 
     public static List<Image> getAnimation(String folderName){
         List<Image> animations = new ArrayList<>();

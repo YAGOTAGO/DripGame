@@ -1,3 +1,4 @@
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -99,13 +100,11 @@ public class GameLogic extends JComponent implements KeyListener {
 	private Image dripGuy = ImageHelper.getImage("drip", "dripGuy.png");
 	private Image dripBall = ImageHelper.getImage("drip", "dripBall.png");
 
-	private GameObject heart1;
-	private GameObject heart2;
-	private GameObject heart3;
 
 	//Animated stuff
 	List<GameObject> objectsToDraw;
 	List<IHitbox> collidables;
+	Player shipTest;
 
 	/**
 	 * Program is a spaceship video game
@@ -120,8 +119,14 @@ public class GameLogic extends JComponent implements KeyListener {
 		ship = new Rectangle(200, 200, 100, 100);
 		rectFuel = new Rectangle(200, 200, 50, 50);
 
+		//new way
 		objectsToDraw = new ArrayList<>();
 		collidables = new ArrayList<>();
+
+		//player
+		shipTest = new Player(200, 200);
+
+		//coins
 		Coin coin1 = new Coin("coin", 250, 400);
 		Coin coin2 = new Coin("coin", 500, 400);
 		
@@ -130,9 +135,10 @@ public class GameLogic extends JComponent implements KeyListener {
 		objectsToDraw.add(new StaticGO("enviornment", "cliffTop.png", -10, -30));
 		objectsToDraw.add(new AnimatedGO("platform", .3, 1177, 620));
 		objectsToDraw.add(new StaticGO("UI", "metal.png", 0, 0));
+		objectsToDraw.add(new StaticGO("UI", "fuelCanister.png", 60, 42));
 		objectsToDraw.add(coin1);
 		objectsToDraw.add(coin2);
-		
+		objectsToDraw.add(shipTest);
 		
 		collidables.add(coin1);
 		collidables.add(coin2);
@@ -148,29 +154,20 @@ public class GameLogic extends JComponent implements KeyListener {
 			g.drawImage(go.display(), go.getX(), go.getY(), this);
 		}
 
+		// score, level and fuel
+		Font newFont = new Font("Helvetica", Font.BOLD, 30);
+		g.setFont(newFont);
+		g.drawString("Score: " + String.valueOf(score), 150, 60);
+		g.drawString("Level " + level, 155, 160);
+		newFont = new Font("Helvetica", Font.BOLD, 14);
+		g.setFont(newFont);
+		g.drawString("FUEL: " + fuel, 55, 37);
+
 		// // start screen
 		// if (start == false) {
 		// 	g.drawImage(startBackground, 0, 0, this);
 		// } else {
-
-		// 	// main background
-		// 	g.drawImage(background, 0, 0, this);
-
-		// 	// bottom cliff
-		// 	g.drawImage(cliffBot, -10, -30, this);
-
-		// 	// metal background where score is
-		// 	g.drawImage(metal, 0, 0, this);
-
-		// 	// score, level and fuel
-		// 	Font newFont = new Font("Helvetica", Font.BOLD, 30);
-		// 	g.setFont(newFont);
-		// 	g.drawString("Score: " + String.valueOf(score), 150, 60);
-		// 	g.drawString("Level " + level, 155, 160);
-		// 	newFont = new Font("Helvetica", Font.BOLD, 14);
-		// 	g.setFont(newFont);
-		// 	g.drawString("FUEL: " + fuel, 55, 37);
-			
+		
 		// 	if (explosionON == true) {
 		// 		//g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
 		// 	}
@@ -595,18 +592,17 @@ public class GameLogic extends JComponent implements KeyListener {
 					flameOn = true;
 
 				}
-				repaint();
 
 			}
 			// right key
 			if (e.getKeyCode() == 39) {
 				theta = theta - Math.PI / 8;
-				repaint();
+				shipTest.changeTheta(true);
 			}
 			// left key
 			if (e.getKeyCode() == 37) {
 				theta = theta + Math.PI / 8;
-				repaint();
+				shipTest.changeTheta(false);
 			}
 			// p key
 			if (e.getKeyCode() == 80) {
