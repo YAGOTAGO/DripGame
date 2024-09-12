@@ -5,7 +5,9 @@ import java.awt.image.BufferedImage;
 
 public final class Player extends GameObject implements IHitbox {
     Rectangle hitBox;
+    
     Fuel fuel;
+    PlayerHealth health;
 
     //Image
     BufferedImage flameOn;
@@ -21,11 +23,12 @@ public final class Player extends GameObject implements IHitbox {
 
     public Player(Fuel fuel, int x, int y){
         super(x, y);
+        this.fuel = fuel;
         hitBox = new Rectangle(x, y, 45, 50);
         flameOn = ImageHelper.getBufferedImage("ship", "spaceshipFlame.png");
         flameOff = ImageHelper.getBufferedImage("ship", "spaceship.png");
         movement = new PlayerMovement();
-        this.fuel = fuel;
+        health = new PlayerHealth();
     }
 
     //changes theta and the image rotation
@@ -46,8 +49,9 @@ public final class Player extends GameObject implements IHitbox {
         movement.applyThrust(fuel, angle, thrust); 
         xPos = movement.updateX(xPos);
         yPos = movement.updateY(yPos);
+        hitBox.setLocation(xPos, yPos);
     }   
-        
+
     @Override
     public Image display() {
         return (fuel.hasFuel() && thrust) ? flameOn : flameOff;
@@ -65,6 +69,10 @@ public final class Player extends GameObject implements IHitbox {
 
     public void setThrust(boolean on){
         thrust = on;
+    }
+
+    public PlayerHealth getPlayerHealth(){
+        return health;
     }
 
 }

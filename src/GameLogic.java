@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
@@ -97,7 +98,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
-		ship = new Rectangle(200, 200, 100, 100);
+		ship = new Rectangle(50, 300, 100, 100);
 		rectFuel = new Rectangle(200, 200, 50, 50);
 
 		//new way
@@ -106,7 +107,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 		//player
 		Fuel fuelGO = new Fuel(100);
-		shipTest = new Player(fuelGO, 200, 200);
+		shipTest = new Player(fuelGO, 50, 300);
 
 		//coins
 		Coin coin1 = new Coin("coin", 250, 400);
@@ -119,6 +120,13 @@ public final class GameLogic extends JComponent implements KeyListener {
 		objectsToDraw.add(new StaticGO("UI", "metal.png", 0, 0));
 		objectsToDraw.add(fuelGO);
 		objectsToDraw.add(new StaticGO("UI", "fuelCanister.png", 60, 42));
+
+		Queue<GameObject> hearts = shipTest.getPlayerHealth().getHearts();
+
+		for(GameObject heart : hearts){
+			objectsToDraw.add(heart);
+		}
+		
 		objectsToDraw.add(coin1);
 		objectsToDraw.add(coin2);
 		objectsToDraw.add(shipTest);
@@ -549,7 +557,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 				shipTest.changeAngle(true);
 			}
 			// left key
-			if (e.getKeyCode() == KeyEvent.VK_LEFT||  e.getKeyCode() == KeyEvent.VK_A) {
+			if (e.getKeyCode() == KeyEvent.VK_LEFT ||  e.getKeyCode() == KeyEvent.VK_A) {
 				shipTest.changeAngle(false);
 			}
 			// p key
