@@ -2,17 +2,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
@@ -24,8 +25,8 @@ public class GameLogic extends JComponent implements KeyListener {
 	int w = ExecuteGame.SCREENWIDTH;
 	private int initialY = 300;
 	private int initialX = 50;
-	private double x = initialX;
-	private double y = initialY;
+	private int x = initialX;
+	private int y = initialY;
 	private double initialTheta = Math.PI / 2;
 	private double theta = initialTheta;
 	private int xBoundary = 0;
@@ -35,8 +36,8 @@ public class GameLogic extends JComponent implements KeyListener {
 	private int botH = h - (h / 4);
 	int botW = w / 6;
 	int bot2H = h - (h / 2);
-	private Rectangle2D.Double ship = new Rectangle2D.Double();
-	private Rectangle2D.Double rectFuel = new Rectangle2D.Double();
+	private Rectangle ship = null;
+	private Rectangle rectFuel;
 	public static int score = 0;
 	private int initialFuel = 400;
 	private int fuel = initialFuel;
@@ -92,45 +93,28 @@ public class GameLogic extends JComponent implements KeyListener {
 	DripBalls ball1 = new DripBalls(dripBallX, dripBallY);
 
 	// all images by Mina Stevens
-	// these strings used so anyone can see the images
-	String fileSeparator = System.getProperty("file.separator");
-	String userDir = System.getProperty("user.dir") + fileSeparator + "src";
-	
-	private Image heart = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "heart.png");
-	private Image fuelPic = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "fuel.png");
-	private Image startBackground = Toolkit.getDefaultToolkit()
-			.getImage(userDir + fileSeparator + "startBackground.png");
-	private Image spaceBackground = Toolkit.getDefaultToolkit()
-			.getImage(userDir + fileSeparator + "spaceBackground.png");
-	private Image victoryBackground = Toolkit.getDefaultToolkit()
-			.getImage(userDir + fileSeparator + "victoryBackground.png");
-	private Image drip = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "drip.png");
-	private Image metal = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "metal.png");
-	private Image cliffBot = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "cliffBot.png");
-	private Image cliffTop = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "cliffTop.png");
-	private Image background = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "background.png");
-	private Image dripFlat = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripFlat.png");
-	private Image gameOver = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "gameOver.png");
-	private Image fuelCanister = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "fuelCanister.png");
-	private Image dripGuy = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripGuy.png");
-	private Image dripBall = Toolkit.getDefaultToolkit().getImage(userDir + fileSeparator + "dripBall.png");
+	private Image fuelPic = ImageHelper.getImage("UI", "fuel.png");
+	private Image startBackground = ImageHelper.getImage("screen", "startBackground.png");
+	private Image spaceBackground = ImageHelper.getImage("screen", "spaceBackground.png");
+	private Image victoryBackground = ImageHelper.getImage("screen", "victoryBackground.png");
+	private Image drip = ImageHelper.getImage("drip", "drip.png");
+	private Image metal = ImageHelper.getImage("UI", "metal.png");
+	private Image cliffBot = ImageHelper.getImage("enviornment", "cliffBot.png");
+	private Image cliffTop = ImageHelper.getImage("enviornment", "cliffTop.png");
+	private Image background = ImageHelper.getImage("screen", "background.png");
+	private Image dripFlat = ImageHelper.getImage("drip", "dripFlat.png");
+	private Image gameOver = ImageHelper.getImage("screen", "gameOver.png");
+	private Image fuelCanister = ImageHelper.getImage("UI", "fuelCanister.png");
+	private Image dripGuy = ImageHelper.getImage("drip", "dripGuy.png");
+	private Image dripBall = ImageHelper.getImage("drip", "dripBall.png");
 
-	//coins
-	private CoinCollection coinCollection;
-	private AnimationRequest coinAnimation;
-	private Image[] coins;
-	
-	//platform
-	private AnimationRequest platformAnimation;
-	private Image[] platform;
+	private GameObject heart1;
+	private GameObject heart2;
+	private GameObject heart3;
 
-	//chest
-	private AnimationRequest chestAnimation;
-	private Image[] chest;
-
-	//explosion
-	private AnimationRequest explosionAnimation;
-	private Image[] explosion;
+	//Animated stuff
+	List<IAnimated> animations;
+	List<Collectible> collectibles;
 	
 	/**
 	 * Program is a spaceship video game
@@ -142,27 +126,23 @@ public class GameLogic extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
-
-		coinCollection = new CoinCollection();
-
-		coinAnimation = new AnimationRequest("coin", "Gold", FileExtension.PNG, 10);
-		coins = coinAnimation.getFrames();
 		
-		platformAnimation = new AnimationRequest("platform", "landing", FileExtension.PNG, 4);
-		platform = platformAnimation.getFrames();
-
-		chestAnimation = new AnimationRequest("chest", "chest", FileExtension.PNG, 9);
-		chest = chestAnimation.getFrames();
-		
-		explosionAnimation = new AnimationRequest("explosion", "explosion", FileExtension.PNG, 7);
-		explosion = explosionAnimation.getFrames();
-
-
+		animations = new ArrayList<>();
+		collectibles = new ArrayList<>();
+		ship = new Rectangle(200, 200, 100, 100);
+		rectFuel = new Rectangle(200, 200, 50, 50);
+		Coin coin1 = new Coin(250, 400);
+		Coin coin2 = new Coin(500, 400);
+		animations.add(coin1);
+		animations.add(coin2);
+		collectibles.add(coin1);
+		collectibles.add(coin2);
 
 		addKeyListener(this);
 		setFocusable(true);
 	}
 
+    @Override
 	public void paintComponent(Graphics g) {
 
 		// start screen
@@ -187,9 +167,9 @@ public class GameLogic extends JComponent implements KeyListener {
 			newFont = new Font("Helvetica", Font.BOLD, 14);
 			g.setFont(newFont);
 			g.drawString("FUEL: " + fuel, 55, 37);
-
+			
 			if (explosionON == true) {
-				g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
+				//g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
 			}
 			// System.out.println("X cord: " + explosionX + " Y cord: " + explosionY);
 
@@ -197,15 +177,15 @@ public class GameLogic extends JComponent implements KeyListener {
 			BufferedImage in = null;
 			try {
 				if (flameOn == true && fuel > 0) {
-					in = ImageIO.read(new File(userDir + fileSeparator + "spaceshipFlame.png"));
+					in = ImageIO.read(new File("images\\ship\\spaceshipFlame.png"));
 					yVelocity = yVelocity - yVelCoefficient * Math.sin(theta);
 					xVelocity = xVelocity + xVelCoefficient * Math.cos(theta);
-					x = x + xVelocity;
-					y = y + yVelocity;
+					x = x + (int) xVelocity;
+					y = y + (int) yVelocity;
 					fuel = fuel - 1;
 					fuelY = fuelY + 1;
 				} else {
-					in = ImageIO.read(new File(userDir + fileSeparator + "spaceship.png"));
+					in = ImageIO.read(new File("images\\ship\\spaceship.png"));
 				}
 			} catch (IOException e) {
 				System.out.println("didnt work: " + e);
@@ -225,13 +205,15 @@ public class GameLogic extends JComponent implements KeyListener {
 			// Drawing the rotated image at the required drawing locations
 			g.drawImage(op.filter(in, null), (int) x - 13, (int) y - 3, this);
 
-			ship.setRect(x, y, 45.0, 55);
+			ship = new Rectangle(x, y, 45, 55);
 			// commented out but would should hitbox
 			// g2.setColor(Color.RED);
 			// g2.draw(at.createTransformedShape(rect));
 
-			score += (100 * coinCollection.hitCoins(ship)); //increase value per ht coin
-			coinCollection.drawCoins(coins[(int)t],g, this); // draw non hit coins
+			//score += (100 * coinCollection.hitCoins(ship)); //increase value per hit coin
+			for (IAnimated e : animations) {
+				g.drawImage(e.GetFrame(), e.getX(), e.getY(), this);
+			}
 
 			if (level != 3) {
 				// fuel icon interaction
@@ -247,7 +229,7 @@ public class GameLogic extends JComponent implements KeyListener {
 				// g2.draw(setRectBounds(dripBallX,dripBallY,30,30));
 
 				if (chestIntersection == 0) {
-					g.drawImage(chest[(int) c], 870, 524, this);
+					//g.drawImage(chest[(int) c], 870, 524, this);
 					if (touchRect(setRectBounds(870, 524, 125, 125))) {
 						numberOn = true;
 						score += 10000;
@@ -289,7 +271,7 @@ public class GameLogic extends JComponent implements KeyListener {
 			}
 
 			// landing platform
-			g.drawImage(platform[(int) m], platformX, platformY, this);
+			//g.drawImage(platform[(int) m], platformX, platformY, this);
 
 			// Draws fuel and cannister
 			Color purple = new Color(145, 0, 255);
@@ -313,22 +295,19 @@ public class GameLogic extends JComponent implements KeyListener {
 
 			// draws hearts on the screen and end screen
 			switch (numLives) {
-			case 3:
-				g.drawImage(heart, 150, 80, this);
-				g.drawImage(heart, 200, 80, this);
-				g.drawImage(heart, 250, 80, this);
-				break;
-			case 2:
-				g.drawImage(heart, 150, 80, this);
-				g.drawImage(heart, 200, 80, this);
-				break;
-			case 1:
-				g.drawImage(heart, 150, 80, this);
-				break;
-			case 0:
-				g.drawImage(gameOver, 0, 0, this);
-
-			}
+			case 3 -> {
+            //                g.drawImage(heart, 150, 80, this);
+            //                g.drawImage(heart, 200, 80, this);
+            //                g.drawImage(heart, 250, 80, this);
+                        }
+			case 2 -> {
+            //                g.drawImage(heart, 150, 80, this);
+            //                g.drawImage(heart, 200, 80, this);
+                        }
+			//case 1 -> g.drawImage(heart, 150, 80, this);
+			case 0 -> g.drawImage(gameOver, 0, 0, this);
+						
+			}	
 			// makes the screen before the next level
 			if (gameWon == true) {
 				if (level != 3) {
@@ -354,19 +333,13 @@ public class GameLogic extends JComponent implements KeyListener {
 		}
 	}
 
-	public Rectangle2D setRectBounds(int x, int y, int w, int h) {
-		Rectangle2D.Double output = new Rectangle2D.Double();
-		output.setRect(x, y, w, h);
-		return output;
+	public Rectangle setRectBounds(int x, int y, int w, int h) {
+		return new Rectangle(x, y, w, h);
 	}
 
 	// if rect (aka Ship) intersects another rectangle
-	public boolean touchRect(Rectangle2D a) {
-		if (ship.intersects(a)) {
-			return true;
-		} else {
-			return false;
-		}
+	public boolean touchRect(Rectangle a) {
+    	return ship.intersects(a);
 	}
 
 	// detects if fuel icon is touched
@@ -383,7 +356,7 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	// method that checks if a bounding rectangle intersects with the background
 	// rectangles
-	public boolean isTouchBound(Rectangle2D rect) {
+	public boolean isTouchBound(Rectangle rect) {
 		if (rect.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) != 1)
 			return true;
 		else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
@@ -442,7 +415,7 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	public void resetGame(int level) {
 
-		coinCollection.resetCoins();
+		//coinCollection.resetCoins();
 
 		xVelocity = 0;
 		yVelocity = 0;
@@ -461,14 +434,17 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	public int fuelLevel(int a) {
 		switch (a) {
-		case 1:
-			return initialFuel;
+		case 1 -> {
+                    return initialFuel;
+                }
 
-		case 2:
-			return initialFuel - 100;
+		case 2 -> {
+                    return initialFuel - 100;
+                }
 
-		case 3:
-			return initialFuel - 100;
+		case 3 -> {
+                    return initialFuel - 100;
+                }
 		}
 		return 0;
 	}
@@ -477,16 +453,16 @@ public class GameLogic extends JComponent implements KeyListener {
 		resetGame(level);
 
 		switch (level) {
-		case 2:
-			// level =2;
-			numLives = 3;
-			fuel = initialFuel - 100;
-			break;
-		case 3:
-			// level = 3;
-			numLives = 3;
-			fuel = initialFuel - 100;
-			break;
+		case 2 -> {
+                    // level =2;
+                    numLives = 3;
+                    fuel = initialFuel - 100;
+                }
+		case 3 -> {
+                    // level = 3;
+                    numLives = 3;
+                    fuel = initialFuel - 100;
+                }
 
 		}
 		repaint();
@@ -496,6 +472,10 @@ public class GameLogic extends JComponent implements KeyListener {
 
 		public void actionPerformed(ActionEvent e) {
 			// System.out.println("xVel: " + xVelocity + " yVel: " + yVelocity);
+
+			for(IAnimated a : animations){
+				a.updateAnimationStep();
+			}
 
 			if (explosionON == true) {
 				explosionTimer = explosionTimer + 1;
@@ -531,8 +511,8 @@ public class GameLogic extends JComponent implements KeyListener {
 				// constant fall of gravity
 				yVelocity = damping * yVelocity + gravity;
 				xVelocity = xVelocity * damping;
-				y = y + yVelocity;
-				x = x + xVelocity;
+				y = y + (int) yVelocity;
+				x = x + (int) xVelocity;
 
 				// drip fall after level 1
 				if (level > 1) {
@@ -628,7 +608,7 @@ public class GameLogic extends JComponent implements KeyListener {
 					if (i < 3) {
 						i++;
 					}
-					coinCollection.resetCoins();
+					//coinCollection.resetCoins();
 					level = level + 1;
 					nextLevel(level);
 				}
@@ -655,7 +635,6 @@ public class GameLogic extends JComponent implements KeyListener {
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// System.out.println("CanvasWithKeyListener.keyTyped: " + e.getKeyChar());
-
 	}
 
 	@Override

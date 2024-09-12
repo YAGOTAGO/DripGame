@@ -1,7 +1,4 @@
-import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 
 public class CoinCollection {
@@ -40,13 +37,8 @@ public class CoinCollection {
     
     public void resetCoins(){
         for (Coin coin : coins) {
-            coin.resetHit();
+            coin.resetIsHit();
         }
     }
     
-    public void drawCoins(Image currCoin, Graphics g, ImageObserver obsv){
-        for(Coin coin : coinsToDraw){
-            coin.drawCoin(currCoin, g, obsv);
-        }
-    }
 }
