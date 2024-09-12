@@ -3,44 +3,55 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-public final class Player extends GameObject implements IHitbox, IMovable {
+public final class Player extends GameObject implements IHitbox {
     Rectangle hitBox;
+
+    //Image
     BufferedImage flameOn;
     BufferedImage flameOff;
     
-    int numLives = 3;
-
-    //Move values
-    final double initialAngle = 0;
+    //Move variables
+    private final PlayerMovement movement;
+    boolean thrust = false;
+    
+    //Angles in DEGREEs
     double angle;
-    double xVel = 0;
-    double yVel = 0;
-    double angleChange = 15.0; //in degrees
+    final double ANGLE_CHANGE = 15.0; 
 
     public Player(int x, int y){
         super(x, y);
         hitBox = new Rectangle(x, y, 45, 50);
-        angle = initialAngle;
         flameOn = ImageHelper.getBufferedImage("ship", "spaceshipFlame.png");
         flameOff = ImageHelper.getBufferedImage("ship", "spaceship.png");
+        movement = new PlayerMovement();
     }
-    
+
     //changes theta and the image rotation
-    public void changeTheta(boolean isPositiveChange){
+    public void changeAngle(boolean isPositiveChange){
+        //determine the sign
+        double signedAngleChange = isPositiveChange ? ANGLE_CHANGE : -ANGLE_CHANGE;
+        
         //change the angle
-        angle = isPositiveChange ? angle+angleChange : angle-angleChange;
+        angle += signedAngleChange;
         angle = RotationHelper.normalizeAngle(angle);
-        System.out.println(angle);
 
         //rotate the image
-        flameOn = RotationHelper.getRotatedBufferedImage(flameOn, angleChange, angle, true);
-        flameOff = RotationHelper.getRotatedBufferedImage(flameOff, angleChange, angle, false);
+        flameOn = RotationHelper.getRotatedBufferedImage(flameOn, signedAngleChange, angle, true);
+        flameOff = RotationHelper.getRotatedBufferedImage(flameOff, signedAngleChange, angle, false);
     }
+    
+    public void move(){
+        // Handles thrust, gravity, and friction
+        movement.applyThrust(angle, thrust); 
 
+        // Update position based on velocities
+        xPos = movement.updateX(xPos);
+        yPos = movement.updateY(yPos);
+    }   
+    
     @Override
     public Image display() {
-        //either return flame on or off
-        return flameOff;
+        return thrust ? flameOn : flameOff;
     }
 
     @Override
@@ -53,9 +64,8 @@ public final class Player extends GameObject implements IHitbox, IMovable {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public void move() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setThrust(boolean on){
+        thrust = on;
     }
-    
+
 }

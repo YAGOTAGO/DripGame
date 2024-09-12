@@ -43,22 +43,14 @@ public class GameLogic extends JComponent implements KeyListener {
 	private int explosionY;
 	private boolean explosionON = false;
 	private int explosionTimer = 0;
-	// c is for chest animation
-	private double c = 0;
 	private int chestIntersection = 0;
-	// m is for landing animation
-	private double m = 0;
 	private int platformX = 1177;
 	private int platformY = 620;
-
-	// t is coins frame variable
-	public static double t = 0;
 	private boolean start = false;
 
 	// y value of drip which used to be a rock
 	private int yDrip = 75;
 	private double yDripVel = 0;
-	private boolean flameOn = false;
 	private boolean puddle = false;
 	private int initialFuelY = 0;
 	private int fuelY = initialFuelY;
@@ -66,15 +58,6 @@ public class GameLogic extends JComponent implements KeyListener {
 	public static int dripGuyY = 120;
 	private int dripGuyX = 910;
 	private boolean dripGuyGoingDown = true;
-
-	// values that affect gravity
-	private double xVelocity = 0;
-	private double yVelocity = 0;
-	private double coefficientFriction = .06;
-	private double damping = 1 - coefficientFriction;
-	private double gravity = .3;
-	private double yVelCoefficient = .4;
-	private double xVelCoefficient = .4;
 	
 	private boolean numberOn = false;
 	private int numberTimer = 0;
@@ -407,8 +390,6 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	public void respawn() {
 		numLives = numLives - 1;
-		xVelocity = 0;
-		yVelocity = 0;
 		x = initialX;
 		y = initialY;
 		theta = initialTheta;
@@ -423,9 +404,6 @@ public class GameLogic extends JComponent implements KeyListener {
 	public void resetGame(int level) {
 
 		//coinCollection.resetCoins();
-
-		xVelocity = 0;
-		yVelocity = 0;
 		x = initialX;
 		y = initialY;
 		theta = initialTheta;
@@ -477,7 +455,9 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	protected class TimerCallback implements ActionListener {
 
+        @Override
 		public void actionPerformed(ActionEvent e) {
+			shipTest.move();
 			repaint();
 			// System.out.println("xVel: " + xVelocity + " yVel: " + yVelocity);
 
@@ -489,34 +469,11 @@ public class GameLogic extends JComponent implements KeyListener {
 				explosionTimer = 0;
 			}
 
-			// c is used for chest animation
-			if (c > 8)
-				c = 0;
-			else
-				c = c + .5;
-			// m is used for landing platform animation
-			if (m > 3) {
-				m = 0;
-			} else {
-				m = m + .3;
-			}
-			// t is used for the coin animation
-			if (t > 9) {
-				t = 0;
-			} else {
-				t = t + .5;
-			}
-
 			// to ensure gravity is only in effect when game starts
 			if (numLives > 0 && start == true) {
 				if (haveWon() == true) {
 					gameWon = true;
 				}
-				// constant fall of gravity
-				yVelocity = damping * yVelocity + gravity;
-				xVelocity = xVelocity * damping;
-				y = y + (int) yVelocity;
-				x = x + (int) xVelocity;
 
 				// drip fall after level 1
 				if (level > 1) {
@@ -580,29 +537,26 @@ public class GameLogic extends JComponent implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 
 		// s for start game key
-		if (e.getKeyCode() == 83) {
+		if (e.getKeyCode() ==  KeyEvent.VK_S) {
 			start = true;
 		}
 
 		if (numLives > 0) {
 
 			// up key
-			if (e.getKeyCode() == 38) {
-				if (fuel > 0) {
-					flameOn = true;
-
-				}
-
+			if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
+				shipTest.setThrust(true);
 			}
+
 			// right key
-			if (e.getKeyCode() == 39) {
+			if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
 				theta = theta - Math.PI / 8;
-				shipTest.changeTheta(true);
+				shipTest.changeAngle(true);
 			}
 			// left key
-			if (e.getKeyCode() == 37) {
+			if (e.getKeyCode() == KeyEvent.VK_LEFT||  e.getKeyCode() == KeyEvent.VK_A) {
 				theta = theta + Math.PI / 8;
-				shipTest.changeTheta(false);
+				shipTest.changeAngle(false);
 			}
 			// p key
 			if (e.getKeyCode() == 80) {
@@ -643,8 +597,8 @@ public class GameLogic extends JComponent implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// up key
-		if (e.getKeyCode() == 38) {
-			flameOn = false;
+		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
+			shipTest.setThrust(false);
 		}
 		// System.out.println("CanvasWithKeyListener.keyReleased: " + e.getKeyCode());
 
