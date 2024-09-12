@@ -1,4 +1,6 @@
-public class GameObject{
+import java.awt.Image;
+
+public abstract class GameObject{
     private final int xPos;
     private final int yPos;
 
@@ -10,4 +12,5 @@ public class GameObject{
     //getters
     public int getX(){return xPos;}
     public int getY(){return yPos;}
+    public abstract Image display();
 }

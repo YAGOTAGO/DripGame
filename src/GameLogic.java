@@ -1,5 +1,3 @@
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -7,14 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
@@ -92,7 +84,6 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	DripBalls ball1 = new DripBalls(dripBallX, dripBallY);
 
-	// all images by Mina Stevens
 	private Image fuelPic = ImageHelper.getImage("UI", "fuel.png");
 	private Image startBackground = ImageHelper.getImage("screen", "startBackground.png");
 	private Image spaceBackground = ImageHelper.getImage("screen", "spaceBackground.png");
@@ -113,9 +104,9 @@ public class GameLogic extends JComponent implements KeyListener {
 	private GameObject heart3;
 
 	//Animated stuff
-	List<IAnimated> animations;
-	List<Collectible> collectibles;
-	
+	List<GameObject> objectsToDraw;
+	List<IHitbox> collidables;
+
 	/**
 	 * Program is a spaceship video game
 	 * 
@@ -126,17 +117,25 @@ public class GameLogic extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
-		
-		animations = new ArrayList<>();
-		collectibles = new ArrayList<>();
 		ship = new Rectangle(200, 200, 100, 100);
 		rectFuel = new Rectangle(200, 200, 50, 50);
-		Coin coin1 = new Coin(250, 400);
-		Coin coin2 = new Coin(500, 400);
-		animations.add(coin1);
-		animations.add(coin2);
-		collectibles.add(coin1);
-		collectibles.add(coin2);
+
+		objectsToDraw = new ArrayList<>();
+		collidables = new ArrayList<>();
+		Coin coin1 = new Coin("coin", 250, 400);
+		Coin coin2 = new Coin("coin", 500, 400);
+		
+		objectsToDraw.add(new StaticGO("screen", "background.png", 0, 0));
+		objectsToDraw.add(new StaticGO("enviornment", "cliffBot.png", -10, -30));
+		objectsToDraw.add(new StaticGO("enviornment", "cliffTop.png", -10, -30));
+		objectsToDraw.add(new AnimatedGO("platform", .3, 1177, 620));
+		objectsToDraw.add(new StaticGO("UI", "metal.png", 0, 0));
+		objectsToDraw.add(coin1);
+		objectsToDraw.add(coin2);
+		
+		
+		collidables.add(coin1);
+		collidables.add(coin2);
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -145,192 +144,203 @@ public class GameLogic extends JComponent implements KeyListener {
     @Override
 	public void paintComponent(Graphics g) {
 
-		// start screen
-		if (start == false) {
-			g.drawImage(startBackground, 0, 0, this);
-		} else {
-
-			// main background
-			g.drawImage(background, 0, 0, this);
-
-			// bottom cliff
-			g.drawImage(cliffBot, -10, -30, this);
-
-			// metal background where score is
-			g.drawImage(metal, 0, 0, this);
-
-			// score, level and fuel
-			Font newFont = new Font("Helvetica", Font.BOLD, 30);
-			g.setFont(newFont);
-			g.drawString("Score: " + String.valueOf(score), 150, 60);
-			g.drawString("Level " + level, 155, 160);
-			newFont = new Font("Helvetica", Font.BOLD, 14);
-			g.setFont(newFont);
-			g.drawString("FUEL: " + fuel, 55, 37);
-			
-			if (explosionON == true) {
-				//g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
-			}
-			// System.out.println("X cord: " + explosionX + " Y cord: " + explosionY);
-
-			// spaceship image
-			BufferedImage in = null;
-			try {
-				if (flameOn == true && fuel > 0) {
-					in = ImageIO.read(new File("images\\ship\\spaceshipFlame.png"));
-					yVelocity = yVelocity - yVelCoefficient * Math.sin(theta);
-					xVelocity = xVelocity + xVelCoefficient * Math.cos(theta);
-					x = x + (int) xVelocity;
-					y = y + (int) yVelocity;
-					fuel = fuel - 1;
-					fuelY = fuelY + 1;
-				} else {
-					in = ImageIO.read(new File("images\\ship\\spaceship.png"));
-				}
-			} catch (IOException e) {
-				System.out.println("didnt work: " + e);
-			}
-
-			BufferedImage newImage = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-			if (theta == Math.PI / 2) {
-				g.drawImage(in, (int) x - 13, (int) y - 3, this);
-			}
-			double rotationRequired = Math.PI / 2 - theta;
-			double locationX = newImage.getWidth() / 2;
-			double locationY = newImage.getHeight() / 2;
-			AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
-			AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-
-			// Drawing the rotated image at the required drawing locations
-			g.drawImage(op.filter(in, null), (int) x - 13, (int) y - 3, this);
-
-			ship = new Rectangle(x, y, 45, 55);
-			// commented out but would should hitbox
-			// g2.setColor(Color.RED);
-			// g2.draw(at.createTransformedShape(rect));
-
-			//score += (100 * coinCollection.hitCoins(ship)); //increase value per hit coin
-			for (IAnimated e : animations) {
-				g.drawImage(e.GetFrame(), e.getX(), e.getY(), this);
-			}
-
-			if (level != 3) {
-				// fuel icon interaction
-				if (!touchFuel() && fuelIntersect == 0) {
-					g.drawImage(fuelPic, 910, 550, this);
-					rectFuel.setRect(910, 550, 50, 50);
-					// g2.draw(rectFuel);
-				}
-			} else {
-				g.drawImage(dripGuy, dripGuyX, dripGuyY, this);
-				g.drawImage(dripBall, dripBallX, dripBallY, this);
-
-				// g2.draw(setRectBounds(dripBallX,dripBallY,30,30));
-
-				if (chestIntersection == 0) {
-					//g.drawImage(chest[(int) c], 870, 524, this);
-					if (touchRect(setRectBounds(870, 524, 125, 125))) {
-						numberOn = true;
-						score += 10000;
-						fuel += 100;
-						fuelY -= 100;
-						chestIntersection += 1;
-
-					}
-				}
-
-				if (numberOn == true) {
-					newFont = new Font("Helvetica", Font.BOLD, 22);
-					g.setFont(newFont);
-					g.setColor(Color.YELLOW);
-					g.drawString("+10000", 920, 560);
-				}
-				// coordinate and width adjusted for fair hitbox
-				if (touchRect(setRectBounds(dripGuyX + 10, dripGuyY + 10, 75, 85))) {
-					respawn();
-				}
-				if (touchRect(setRectBounds(dripBallX, dripBallY, 30, 30))) {
-					ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
-					respawn();
-				}
-
-			}
-
-			// drip
-			if (level > 1) {
-				g.drawImage(drip, 740, yDrip, this);
-				g.drawImage(drip, 1100, yDrip, this);
-				// see bounds of drop
-				// g2.draw(fallingBounds(740+10,yRock+10));
-
-				if (puddle == true && yDrip < 120) {
-					g.drawImage(dripFlat, 720, 295, this);
-					g.drawImage(dripFlat, 1070, 295, this);
-				}
-			}
-
-			// landing platform
-			//g.drawImage(platform[(int) m], platformX, platformY, this);
-
-			// Draws fuel and cannister
-			Color purple = new Color(145, 0, 255);
-			Color fuelRED = new Color(255, 0, 0);
-			g.setColor(purple);
-			if (fuel < initialFuel / 2) {
-				g.setColor(fuelRED);
-			}
-			if (level == 1) {
-				// the numbers added after fuelY are to adjust position on screen
-				g.fillRect(70, (fuelY / 4) + 50, 30, (fuel / 4));
-			} else {
-				g.fillRect(70, (fuelY / 4) + 69, 30, (fuel / 4));
-			}
-
-			g.drawImage(fuelCanister, 60, 42, this);
-			// g.fillRect(45, 35, (w/3)/6 , 2*fuel/3);
-
-			// top cliff
-			g.drawImage(cliffTop, -10, -30, this);
-
-			// draws hearts on the screen and end screen
-			switch (numLives) {
-			case 3 -> {
-            //                g.drawImage(heart, 150, 80, this);
-            //                g.drawImage(heart, 200, 80, this);
-            //                g.drawImage(heart, 250, 80, this);
-                        }
-			case 2 -> {
-            //                g.drawImage(heart, 150, 80, this);
-            //                g.drawImage(heart, 200, 80, this);
-                        }
-			//case 1 -> g.drawImage(heart, 150, 80, this);
-			case 0 -> g.drawImage(gameOver, 0, 0, this);
-						
-			}	
-			// makes the screen before the next level
-			if (gameWon == true) {
-				if (level != 3) {
-					g.drawImage(spaceBackground, 0, 0, this);
-					g.setColor(Color.WHITE);
-					newFont = new Font("Helvetica", Font.BOLD, 80);
-					g.setFont(newFont);
-					g.drawString("Level " + level + " score: " + score, 350, 300);
-					g.drawString("Press [p] for next level", 300, 500);
-					if (i > 0) {
-						g.drawString("Total Scores: " + String.valueOf(arraySum(previousScores) + score), 350, 400);
-					}
-				}
-				// makes the final victory screen
-				if (level >= 3) {
-					g.drawImage(victoryBackground, 0, 0, this);
-					g.setColor(Color.WHITE);
-					newFont = new Font("Helvetica", Font.BOLD, 60);
-					g.setFont(newFont);
-					g.drawString("Total Score: " + String.valueOf(arraySum(previousScores) + score), 400, 400);
-				}
-			}
+		for(GameObject go : objectsToDraw){
+			g.drawImage(go.display(), go.getX(), go.getY(), this);
 		}
+
+		// // start screen
+		// if (start == false) {
+		// 	g.drawImage(startBackground, 0, 0, this);
+		// } else {
+
+		// 	// main background
+		// 	g.drawImage(background, 0, 0, this);
+
+		// 	// bottom cliff
+		// 	g.drawImage(cliffBot, -10, -30, this);
+
+		// 	// metal background where score is
+		// 	g.drawImage(metal, 0, 0, this);
+
+		// 	// score, level and fuel
+		// 	Font newFont = new Font("Helvetica", Font.BOLD, 30);
+		// 	g.setFont(newFont);
+		// 	g.drawString("Score: " + String.valueOf(score), 150, 60);
+		// 	g.drawString("Level " + level, 155, 160);
+		// 	newFont = new Font("Helvetica", Font.BOLD, 14);
+		// 	g.setFont(newFont);
+		// 	g.drawString("FUEL: " + fuel, 55, 37);
+			
+		// 	if (explosionON == true) {
+		// 		//g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
+		// 	}
+		// 	// System.out.println("X cord: " + explosionX + " Y cord: " + explosionY);
+
+		// 	// spaceship image
+		// 	BufferedImage in = null;
+		// 	try {
+		// 		if (flameOn == true && fuel > 0) {
+		// 			in = ImageIO.read(new File("images\\ship\\spaceshipFlame.png"));
+		// 			yVelocity = yVelocity - yVelCoefficient * Math.sin(theta);
+		// 			xVelocity = xVelocity + xVelCoefficient * Math.cos(theta);
+		// 			x = x + (int) xVelocity;
+		// 			y = y + (int) yVelocity;
+		// 			fuel = fuel - 1;
+		// 			fuelY = fuelY + 1;
+		// 		} else {
+		// 			in = ImageIO.read(new File("images\\ship\\spaceship.png"));
+		// 		}
+		// 	} catch (IOException e) {
+		// 		System.out.println("didnt work: " + e);
+		// 	}
+
+		// 	BufferedImage newImage = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+		// 	if (theta == Math.PI / 2) {
+		// 		g.drawImage(in, (int) x - 13, (int) y - 3, this);
+		// 	}
+		// 	double rotationRequired = Math.PI / 2 - theta;
+		// 	double locationX = newImage.getWidth() / 2;
+		// 	double locationY = newImage.getHeight() / 2;
+		// 	AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+		// 	AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+
+		// 	// Drawing the rotated image at the required drawing locations
+		// 	g.drawImage(op.filter(in, null), (int) x - 13, (int) y - 3, this);
+
+		// 	ship = new Rectangle(x, y, 45, 55);
+		// 	// commented out but would should hitbox
+		// 	// g2.setColor(Color.RED);
+		// 	// g2.draw(at.createTransformedShape(rect));
+
+		// 	//score += (100 * coinCollection.hitCoins(ship)); //increase value per hit coin
+			
+		// 	for (Collectible c : collidables){
+		// 		if(c.checkHit(ship)){
+		// 			c.onCollected();
+		// 		}
+		// 	}
+			
+		// 	for (IAnimated e : animations) {
+		// 		g.drawImage(e.GetFrame(), e.getX(), e.getY(), this);
+		// 	}
+
+		// 	if (level != 3) {
+		// 		// fuel icon interaction
+		// 		if (!touchFuel() && fuelIntersect == 0) {
+		// 			g.drawImage(fuelPic, 910, 550, this);
+		// 			rectFuel.setRect(910, 550, 50, 50);
+		// 			// g2.draw(rectFuel);
+		// 		}
+		// 	} else {
+		// 		g.drawImage(dripGuy, dripGuyX, dripGuyY, this);
+		// 		g.drawImage(dripBall, dripBallX, dripBallY, this);
+
+		// 		// g2.draw(setRectBounds(dripBallX,dripBallY,30,30));
+
+		// 		if (chestIntersection == 0) {
+		// 			//g.drawImage(chest[(int) c], 870, 524, this);
+		// 			if (touchRect(setRectBounds(870, 524, 125, 125))) {
+		// 				numberOn = true;
+		// 				score += 10000;
+		// 				fuel += 100;
+		// 				fuelY -= 100;
+		// 				chestIntersection += 1;
+
+		// 			}
+		// 		}
+
+		// 		if (numberOn == true) {
+		// 			newFont = new Font("Helvetica", Font.BOLD, 22);
+		// 			g.setFont(newFont);
+		// 			g.setColor(Color.YELLOW);
+		// 			g.drawString("+10000", 920, 560);
+		// 		}
+		// 		// coordinate and width adjusted for fair hitbox
+		// 		if (touchRect(setRectBounds(dripGuyX + 10, dripGuyY + 10, 75, 85))) {
+		// 			respawn();
+		// 		}
+		// 		if (touchRect(setRectBounds(dripBallX, dripBallY, 30, 30))) {
+		// 			ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
+		// 			respawn();
+		// 		}
+
+		// 	}
+
+		// 	// drip
+		// 	if (level > 1) {
+		// 		g.drawImage(drip, 740, yDrip, this);
+		// 		g.drawImage(drip, 1100, yDrip, this);
+		// 		// see bounds of drop
+		// 		// g2.draw(fallingBounds(740+10,yRock+10));
+
+		// 		if (puddle == true && yDrip < 120) {
+		// 			g.drawImage(dripFlat, 720, 295, this);
+		// 			g.drawImage(dripFlat, 1070, 295, this);
+		// 		}
+		// 	}
+
+		// 	// landing platform
+		// 	//g.drawImage(platform[(int) m], platformX, platformY, this);
+
+		// 	// Draws fuel and cannister
+		// 	Color purple = new Color(145, 0, 255);
+		// 	Color fuelRED = new Color(255, 0, 0);
+		// 	g.setColor(purple);
+		// 	if (fuel < initialFuel / 2) {
+		// 		g.setColor(fuelRED);
+		// 	}
+		// 	if (level == 1) {
+		// 		// the numbers added after fuelY are to adjust position on screen
+		// 		g.fillRect(70, (fuelY / 4) + 50, 30, (fuel / 4));
+		// 	} else {
+		// 		g.fillRect(70, (fuelY / 4) + 69, 30, (fuel / 4));
+		// 	}
+
+		// 	g.drawImage(fuelCanister, 60, 42, this);
+		// 	// g.fillRect(45, 35, (w/3)/6 , 2*fuel/3);
+
+		// 	// top cliff
+		// 	g.drawImage(cliffTop, -10, -30, this);
+
+		// 	// draws hearts on the screen and end screen
+		// 	switch (numLives) {
+		// 	case 3 -> {
+        //     //                g.drawImage(heart, 150, 80, this);
+        //     //                g.drawImage(heart, 200, 80, this);
+        //     //                g.drawImage(heart, 250, 80, this);
+        //                 }
+		// 	case 2 -> {
+        //     //                g.drawImage(heart, 150, 80, this);
+        //     //                g.drawImage(heart, 200, 80, this);
+        //                 }
+		// 	//case 1 -> g.drawImage(heart, 150, 80, this);
+		// 	case 0 -> g.drawImage(gameOver, 0, 0, this);
+						
+		// 	}	
+		// 	// makes the screen before the next level
+		// 	if (gameWon == true) {
+		// 		if (level != 3) {
+		// 			g.drawImage(spaceBackground, 0, 0, this);
+		// 			g.setColor(Color.WHITE);
+		// 			newFont = new Font("Helvetica", Font.BOLD, 80);
+		// 			g.setFont(newFont);
+		// 			g.drawString("Level " + level + " score: " + score, 350, 300);
+		// 			g.drawString("Press [p] for next level", 300, 500);
+		// 			if (i > 0) {
+		// 				g.drawString("Total Scores: " + String.valueOf(arraySum(previousScores) + score), 350, 400);
+		// 			}
+		// 		}
+		// 		// makes the final victory screen
+		// 		if (level >= 3) {
+		// 			g.drawImage(victoryBackground, 0, 0, this);
+		// 			g.setColor(Color.WHITE);
+		// 			newFont = new Font("Helvetica", Font.BOLD, 60);
+		// 			g.setFont(newFont);
+		// 			g.drawString("Total Score: " + String.valueOf(arraySum(previousScores) + score), 400, 400);
+		// 		}
+		// 	}
+		// }
 	}
 
 	public Rectangle setRectBounds(int x, int y, int w, int h) {
@@ -471,11 +481,8 @@ public class GameLogic extends JComponent implements KeyListener {
 	protected class TimerCallback implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
+			repaint();
 			// System.out.println("xVel: " + xVelocity + " yVel: " + yVelocity);
-
-			for(IAnimated a : animations){
-				a.updateAnimationStep();
-			}
 
 			if (explosionON == true) {
 				explosionTimer = explosionTimer + 1;
@@ -546,7 +553,7 @@ public class GameLogic extends JComponent implements KeyListener {
 						dripBallX -= 3;
 					}
 				}
-				repaint();
+				
 
 				if (isTouchBound(ship) == true) {
 					explosionX = (int) x;
