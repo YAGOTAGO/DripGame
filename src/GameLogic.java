@@ -11,7 +11,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-public class GameLogic extends JComponent implements KeyListener {
+public final class GameLogic extends JComponent implements KeyListener {
 	
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
@@ -20,8 +20,6 @@ public class GameLogic extends JComponent implements KeyListener {
 	private int initialX = 50;
 	private int x = initialX;
 	private int y = initialY;
-	private double initialTheta = Math.PI / 2;
-	private double theta = initialTheta;
 	private int xBoundary = 0;
 	private int numLives = 3;
 	private int topH = h / 4;
@@ -107,17 +105,19 @@ public class GameLogic extends JComponent implements KeyListener {
 		collidables = new ArrayList<>();
 
 		//player
-		shipTest = new Player(200, 200);
+		Fuel fuelGO = new Fuel(100);
+		shipTest = new Player(fuelGO, 200, 200);
 
 		//coins
 		Coin coin1 = new Coin("coin", 250, 400);
 		Coin coin2 = new Coin("coin", 500, 400);
-		
+
 		objectsToDraw.add(new StaticGO("screen", "background.png", 0, 0));
 		objectsToDraw.add(new StaticGO("enviornment", "cliffBot.png", -10, -30));
 		objectsToDraw.add(new StaticGO("enviornment", "cliffTop.png", -10, -30));
 		objectsToDraw.add(new AnimatedGO("platform", .3, 1177, 620));
 		objectsToDraw.add(new StaticGO("UI", "metal.png", 0, 0));
+		objectsToDraw.add(fuelGO);
 		objectsToDraw.add(new StaticGO("UI", "fuelCanister.png", 60, 42));
 		objectsToDraw.add(coin1);
 		objectsToDraw.add(coin2);
@@ -346,53 +346,53 @@ public class GameLogic extends JComponent implements KeyListener {
 
 	// method that checks if a bounding rectangle intersects with the background
 	// rectangles
-	public boolean isTouchBound(Rectangle rect) {
-		if (rect.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) != 1)
-			return true;
-		else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
-			return true;
-		else if (rect.intersects(topW, 0, 8 * w / 12, topH / 2))
-			return true;
-		else if (rect.intersects(xBoundary, botH, 2 * w / 12, 20))
-			return true;
-		else if (rect.intersects(xBoundary, 0, 1, h))
-			return true;
-		else if (rect.intersects(w - 1, 0, 1, h))
-			return true;
-		else if (rect.intersects(w / 6, h - (4 * h / 10), 250, 170))
-			return true;
-		else if (rect.intersects(w / 4, bot2H, 125, 130))
-			return true;
-		else if (rect.intersects(w / 3, h - (4 * h / 10), 300, 100))
-			return true;
-		else if (rect.intersects(w / 2, h - (6 * h / 10), 125, 400))
-			return true;
-		else if (rect.intersects(7 * w / 12, h - (h / 6), 250, 50))
-			return true;
-		else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
-			return true;
-		else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
-			return true;
-		else if (rect.intersects(750, yDrip + 10, 30, 40) && level >= 2)
-			return true;
-		else return rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2;
+	// public boolean isTouchBound(Rectangle rect) {
+	// 	if (rect.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) != 1)
+	// 		return true;
+	// 	else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
+	// 		return true;
+	// 	else if (rect.intersects(topW, 0, 8 * w / 12, topH / 2))
+	// 		return true;
+	// 	else if (rect.intersects(xBoundary, botH, 2 * w / 12, 20))
+	// 		return true;
+	// 	else if (rect.intersects(xBoundary, 0, 1, h))
+	// 		return true;
+	// 	else if (rect.intersects(w - 1, 0, 1, h))
+	// 		return true;
+	// 	else if (rect.intersects(w / 6, h - (4 * h / 10), 250, 170))
+	// 		return true;
+	// 	else if (rect.intersects(w / 4, bot2H, 125, 130))
+	// 		return true;
+	// 	else if (rect.intersects(w / 3, h - (4 * h / 10), 300, 100))
+	// 		return true;
+	// 	else if (rect.intersects(w / 2, h - (6 * h / 10), 125, 400))
+	// 		return true;
+	// 	else if (rect.intersects(7 * w / 12, h - (h / 6), 250, 50))
+	// 		return true;
+	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
+	// 		return true;
+	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
+	// 		return true;
+	// 	else if (rect.intersects(750, yDrip + 10, 30, 40) && level >= 2)
+	// 		return true;
+	// 	else return rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2;
 		
-	}
+	// }
 
-	public boolean haveWon() {
+	// public boolean haveWon() {
 
-		if (ship.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) == 1)
-			return true;
-		else
-			return false;
+	// 	if (ship.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) == 1)
+	// 		return true;
+	// 	else
+	// 		return false;
 
-	}
+	// }
 
 	public void respawn() {
 		numLives = numLives - 1;
 		x = initialX;
 		y = initialY;
-		theta = initialTheta;
+		//theta = initialTheta;
 		fuel = fuelLevel(level);
 		score = score - 100;
 		fuelIntersect = 0;
@@ -406,7 +406,7 @@ public class GameLogic extends JComponent implements KeyListener {
 		//coinCollection.resetCoins();
 		x = initialX;
 		y = initialY;
-		theta = initialTheta;
+		//theta = initialTheta;
 		this.level = level;
 		fuel = fuelLevel(this.level);
 		score = 0;
@@ -471,9 +471,6 @@ public class GameLogic extends JComponent implements KeyListener {
 
 			// to ensure gravity is only in effect when game starts
 			if (numLives > 0 && start == true) {
-				if (haveWon() == true) {
-					gameWon = true;
-				}
 
 				// drip fall after level 1
 				if (level > 1) {
@@ -508,17 +505,16 @@ public class GameLogic extends JComponent implements KeyListener {
 					}
 				}
 				
+				// if (isTouchBound(ship) == true) {
+				// 	explosionX = (int) x;
+				// 	explosionY = (int) y;
+				// 	explosionON = true;
+				// 	respawn();
 
-				if (isTouchBound(ship) == true) {
-					explosionX = (int) x;
-					explosionY = (int) y;
-					explosionON = true;
-					respawn();
-
-				}
-				if (isTouchBound(setRectBounds(dripBallX, dripBallY, 30, 30)) == true) {
-					ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
-				}
+				// }
+				// if (isTouchBound(setRectBounds(dripBallX, dripBallY, 30, 30)) == true) {
+				// 	ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
+				// }
 
 			}
 		}
@@ -550,12 +546,10 @@ public class GameLogic extends JComponent implements KeyListener {
 
 			// right key
 			if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
-				theta = theta - Math.PI / 8;
 				shipTest.changeAngle(true);
 			}
 			// left key
 			if (e.getKeyCode() == KeyEvent.VK_LEFT||  e.getKeyCode() == KeyEvent.VK_A) {
-				theta = theta + Math.PI / 8;
 				shipTest.changeAngle(false);
 			}
 			// p key

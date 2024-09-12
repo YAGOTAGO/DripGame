@@ -3,6 +3,7 @@ public final class PlayerMovement {
     private double xVel;
     private double yVel;
     
+    private final int FUEL_USE_AMOUNT = 1; //means 1 fuel per movement
     private final double GRAVITY = 0.5; // Gravity force
     private final double FRICTION = 0.97; // Friction to slow down the spaceship
     private final double Y_VEL_COEFFICIENT = 1;
@@ -14,13 +15,14 @@ public final class PlayerMovement {
     }
 
     // Apply thrust, update velocities
-    public void applyThrust(double angle, boolean thrust) {
-        if (thrust) {
+    public void applyThrust(Fuel fuel, double angle, boolean thrust) {
+        if (thrust & fuel.hasFuel()) {
             // Calculate velocity based on angle and thrust
             yVel -= (Y_VEL_COEFFICIENT * Math.cos(Math.toRadians(angle)));
             xVel += (X_VEL_COEFFICIENT * Math.sin(Math.toRadians(angle)));
+            fuel.useFuel(FUEL_USE_AMOUNT);
         }
-
+        
         // Apply gravity and friction
         yVel += GRAVITY;
         yVel *= FRICTION;

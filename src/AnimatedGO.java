@@ -7,7 +7,7 @@ public class AnimatedGO extends GameObject{
     double currFrame;
     double animationRate;
     int maxFrames;
-
+    
     public AnimatedGO(String folder, double animationRate, int x, int y){
         super(x, y);
         this.animationRate = animationRate;
