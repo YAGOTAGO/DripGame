@@ -48,6 +48,8 @@ public final class GameLogic extends JComponent implements KeyListener {
 	
 	private List<GameObject> objectsToDraw;
 	private List<IHitbox> collidables;
+	private List<IMovable> movables; 
+
 	private Player ship;
 	private final boolean DEBUG_MODE = true;
 	private int score = 0;
@@ -76,6 +78,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 		objectsToDraw = levelOne.getObjectDrawList();
 		collidables = levelOne.getCollidablesList();
+		movables = levelOne.getMovablesList();
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -418,6 +421,10 @@ public final class GameLogic extends JComponent implements KeyListener {
 		public void actionPerformed(ActionEvent e) {
 			ship.move();
 
+			for(IMovable elem : movables){
+				elem.move();
+			}
+			
 			repaint();
 
 

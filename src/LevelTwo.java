@@ -52,5 +52,8 @@ public final class LevelTwo extends Level {
 		collidables.addAll(terrainCollection.getTerrainList());
 		collidables.add(platform);
         collidables.add(fuel);
+        
+        //Movables
+        movables.add(fuel);
     }
 }
