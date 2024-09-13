@@ -66,7 +66,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 	public GameLogic() { 
 		super();
 		timer = new Timer(50, new TimerCallback()); // 50 ms = 0.05 sec
-		timer.start();
+		
 		
 		// levels = new ArrayList<>(){{
 		// 	add(new LevelOne(ship));
@@ -82,6 +82,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 		addKeyListener(this);
 		setFocusable(true);
+		timer.start();
 	}
 
     @Override
@@ -108,6 +109,10 @@ public final class GameLogic extends JComponent implements KeyListener {
 			g.drawRect(temp.x, temp.y, temp.width, temp.height);
 		}
 		
+		for(IMovable elem : movables){
+			elem.move();
+		}
+
 		for(IHitbox curr : collidables){
 			if(DEBUG_MODE){
 				Rectangle r = curr.getHitbox();
@@ -117,7 +122,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 				curr.onHit(ship);
 			}
 		}
-
 
 		// // start screen
 		// if (start == false) {
@@ -301,8 +305,8 @@ public final class GameLogic extends JComponent implements KeyListener {
 		objectsToDraw.remove(go);
 	}
 
-	public void removeObjectFromCollide(IHitbox go){
-		collidables.remove(go);
+	public void addDrawable(GameObject go){
+		objectsToDraw.add(go);
 	}
 
 	public Rectangle setRectBounds(int x, int y, int w, int h) {
@@ -421,10 +425,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 		public void actionPerformed(ActionEvent e) {
 			ship.move();
 
-			for(IMovable elem : movables){
-				elem.move();
-			}
-			
 			repaint();
 
 

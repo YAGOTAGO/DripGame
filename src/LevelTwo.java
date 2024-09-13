@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Queue;
 
 public final class LevelTwo extends Level {
-    
+
     public LevelTwo(Player ship){
         //Add objects in
         Platform platform = new Platform();
@@ -46,14 +46,23 @@ public final class LevelTwo extends Level {
         objectsToDraw.add(fuel);
 		objectsToDraw.add(ship);
         objectsToDraw.add(platform);
+        DripDrop dropOne = new DripDrop(objectsToDraw, 740, 75);
+        DripDrop dropTwo = new DripDrop(objectsToDraw, 1100, 75);
+        objectsToDraw.add(dropOne);
+        objectsToDraw.add(dropTwo);
 
         //Collidables
 		collidables.addAll(coins);
 		collidables.addAll(terrainCollection.getTerrainList());
 		collidables.add(platform);
         collidables.add(fuel);
-        
+        collidables.add(dropTwo);
+        collidables.add(dropOne);
+
         //Movables
         movables.add(fuel);
+        movables.add(dropOne);
+        movables.add(dropTwo);
+
     }
 }

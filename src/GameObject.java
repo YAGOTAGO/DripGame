@@ -15,4 +15,5 @@ public abstract class GameObject{
     public int getY(){return yPos;}
     public abstract Image display();
     public boolean canDraw(){ return canDraw; }
+    public void setDraw(boolean draw) { canDraw = draw; }
 }
