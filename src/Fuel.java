@@ -5,10 +5,10 @@ import java.awt.image.BufferedImage;
 
 public final class Fuel extends GameObject{
     final int INIT_FUEL;
-    int fuel;
-    int width = 20;
-    int maxHeight = 200;
-    
+    private int fuel;
+    private final int WIDTH = 20;
+    private final int MAX_HEIGHT = 200;
+        
     public Fuel(int fuel) {
         super(85, -50);
         this.fuel = fuel;
@@ -17,13 +17,13 @@ public final class Fuel extends GameObject{
 
     @Override
     public Image display() {
-        int filledHeight = (fuel > 0) ? (int) ((fuel / (2.0 * INIT_FUEL)) * maxHeight) : 0;
+        int filledHeight = (fuel > 0) ? (int) ((fuel / (2.0 * INIT_FUEL)) * MAX_HEIGHT) : 0;
         Color color = fuel > INIT_FUEL/2 ? Color.MAGENTA : Color.RED;
-        BufferedImage image = new BufferedImage(width, maxHeight, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(WIDTH, MAX_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(color);
-        g2d.fillRect(0, maxHeight - filledHeight, width, filledHeight);
+        g2d.fillRect(0, MAX_HEIGHT - filledHeight, WIDTH, filledHeight);
         g2d.dispose(); //so garbage collector doesn't have to
         
         return image;
@@ -38,4 +38,12 @@ public final class Fuel extends GameObject{
     }
 
     public int getFuel(){return fuel;}
+
+    public void resetFuel(){
+        fuel = INIT_FUEL;
+    }
+
+    public int getMaxHeight() {
+        return MAX_HEIGHT;
+    }
 }

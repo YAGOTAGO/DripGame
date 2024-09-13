@@ -5,8 +5,8 @@ public class Coin extends AnimatedGO implements IHitbox{
     final int COIN_VALUE = 100;
     boolean canCollide = true;
 
-    public Coin(String folder, int x, int y) {
-        super(folder, .5, x, y);
+    public Coin(int x, int y) {
+        super("coin", .5, x, y);
         hitBox = new Rectangle(x, y, 50, 50);
     }
 
@@ -20,7 +20,7 @@ public class Coin extends AnimatedGO implements IHitbox{
         ExecuteGame.getInstance().getLogic().updateScore(COIN_VALUE);
         canDraw = canCollide = false;
     }
-    
+
     @Override   
     public boolean canCollide() {
         return canCollide;

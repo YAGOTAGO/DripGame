@@ -5,17 +5,17 @@ public final class PlayerHealth {
     
     int health = 3;
 
-    StaticGO heart1;
-    StaticGO heart2;
-    StaticGO heart3;
+    SpriteGO heart1;
+    SpriteGO heart2;
+    SpriteGO heart3;
 
     Queue<GameObject> hearts;
-    
+
     public PlayerHealth(){
         hearts = new LinkedList<>();
-        heart1 = new StaticGO("UI", "heart.png", 150, 80);
-        heart2 = new StaticGO("UI", "heart.png", 200, 80);
-        heart3 = new StaticGO("UI", "heart.png", 250, 80);
+        heart1 = new SpriteGO("UI", "heart.png", 150, 80);
+        heart2 = new SpriteGO("UI", "heart.png", 200, 80);
+        heart3 = new SpriteGO("UI", "heart.png", 250, 80);
         hearts.add(heart1);
         hearts.add(heart2);
         hearts.add(heart3);

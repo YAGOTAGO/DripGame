@@ -1,6 +1,6 @@
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,24 +17,10 @@ public final class GameLogic extends JComponent implements KeyListener {
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
 	int w = ExecuteGame.SCREENWIDTH;
-	private int score = 0;
 
-	private int xBoundary = 0;
-	private int numLives = 3;
-	private int topH = h / 4;
-	private int topW = w / 3;
-	private int botH = h - (h / 4);
-	int botW = w / 6;
-	int bot2H = h - (h / 2);
-	private Rectangle ship = null;
-	private Rectangle rectFuel;
-	
-	private int initialFuel = 400;
-	private int fuel = initialFuel;
 	private boolean gameWon = false;
 	private int level = 1;
-	private int[] previousScores = new int[2];
-	private int i = 0;
+
 	private int fuelIntersect = 0;
 	private int explosionX;
 	private int explosionY;
@@ -43,7 +29,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 	private int chestIntersection = 0;
 	private int platformX = 1177;
 	private int platformY = 620;
-	private boolean start = false;
 
 	// y value of drip which used to be a rock
 	private int yDrip = 75;
@@ -65,26 +50,15 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 	DripBalls ball1 = new DripBalls(dripBallX, dripBallY);
 
-	private Image fuelPic = ImageHelper.getImage("UI", "fuel.png");
-	private Image startBackground = ImageHelper.getImage("screen", "startBackground.png");
-	private Image spaceBackground = ImageHelper.getImage("screen", "spaceBackground.png");
-	private Image victoryBackground = ImageHelper.getImage("screen", "victoryBackground.png");
-	private Image drip = ImageHelper.getImage("drip", "drip.png");
-	private Image metal = ImageHelper.getImage("UI", "metal.png");
-	private Image cliffBot = ImageHelper.getImage("enviornment", "cliffBot.png");
-	private Image cliffTop = ImageHelper.getImage("enviornment", "cliffTop.png");
-	private Image background = ImageHelper.getImage("screen", "background.png");
-	private Image dripFlat = ImageHelper.getImage("drip", "dripFlat.png");
-	private Image gameOver = ImageHelper.getImage("screen", "gameOver.png");
-	private Image fuelCanister = ImageHelper.getImage("UI", "fuelCanister.png");
-	private Image dripGuy = ImageHelper.getImage("drip", "dripGuy.png");
-	private Image dripBall = ImageHelper.getImage("drip", "dripBall.png");
-
 	
-	//Animated stuff
 	private List<GameObject> objectsToDraw;
-	List<IHitbox> collidables;
-	Player shipTest;
+	private List<IHitbox> collidables;
+	private Player shipTest;
+	private final boolean DEBUG_MODE = true;
+	private int score = 0;
+	private int[] previousScores = new int[2];
+	private boolean start = true;
+
 
 	/**
 	 * Program is a spaceship video game
@@ -96,8 +70,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
-		ship = new Rectangle(50, 300, 100, 100);
-		rectFuel = new Rectangle(200, 200, 50, 50);
 
 		//new way
 		objectsToDraw = new ArrayList<>();
@@ -105,32 +77,34 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 		//player
 		Fuel fuelGO = new Fuel(100);
-		shipTest = new Player(fuelGO, 50, 300);
+		shipTest = new Player(fuelGO);
 
 		//coins
-		Coin coin1 = new Coin("coin", 250, 400);
-		Coin coin2 = new Coin("coin", 500, 400);
+		Coin coin1 = new Coin(250, 400);
+		Coin coin2 = new Coin(500, 400);
+		Platform platform = new Platform();
 		
-		objectsToDraw.add(new StaticGO("screen", "background.png", 0, 0));
-		objectsToDraw.add(new StaticGO("enviornment", "cliffBot.png", -10, -30));
-		objectsToDraw.add(new StaticGO("enviornment", "cliffTop.png", -10, -30));
-		objectsToDraw.add(new AnimatedGO("platform", .3, 1177, 620));
-		objectsToDraw.add(new StaticGO("UI", "metal.png", 0, 0));
+		objectsToDraw.add(new SpriteGO("screen", "background.png", 0, 0));
+		objectsToDraw.add(new SpriteGO("enviornment", "cliffBot.png", -10, -30));
+		objectsToDraw.add(new SpriteGO("enviornment", "cliffTop.png", -10, -30));
+		objectsToDraw.add(platform);
+		objectsToDraw.add(new SpriteGO("UI", "metal.png", 0, 0));
 		objectsToDraw.add(fuelGO);
-		objectsToDraw.add(new StaticGO("UI", "fuelCanister.png", 60, 42));
+		objectsToDraw.add(new SpriteGO("UI", "fuelCanister.png", 60, 42));
 
-		Queue<GameObject> hearts = shipTest.getPlayerHealth().getHearts();
-
-		for(GameObject heart : hearts){
-			objectsToDraw.add(heart);
-		}
+		Queue<GameObject> hearts = shipTest.getHearts();
+		objectsToDraw.addAll(hearts);
 
 		objectsToDraw.add(coin1);
 		objectsToDraw.add(coin2);
 		objectsToDraw.add(shipTest);
 		
+
+		TerrainCollection terrainCollection = new TerrainCollection();
 		collidables.add(coin1);
 		collidables.add(coin2);
+		collidables.addAll(terrainCollection.getTerrainList());
+		collidables.add(platform);
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -152,14 +126,24 @@ public final class GameLogic extends JComponent implements KeyListener {
 		g.drawString("Level " + level, 155, 160);
 		newFont = new Font("Helvetica", Font.BOLD, 14);
 		g.setFont(newFont);
-		g.drawString("FUEL: " + fuel, 55, 37);
+		g.drawString("FUEL: " + shipTest.getFuel(), 55, 37);
 
-
+		if(DEBUG_MODE){
+			g.setColor(Color.RED);
+			Rectangle temp = shipTest.getHitbox();
+			g.drawRect(temp.x, temp.y, temp.width, temp.height);
+		}
+		
 		for(IHitbox curr : collidables){
+			if(DEBUG_MODE){
+				Rectangle r = curr.getHitbox();
+				g.drawRect(r.x, r.y, r.width, r.height);
+			}
 			if(curr.canCollide() && curr.intersects(shipTest)){
 				curr.onHit(shipTest);
 			}
 		}
+
 
 		// // start screen
 		// if (start == false) {
@@ -351,52 +335,49 @@ public final class GameLogic extends JComponent implements KeyListener {
 		return new Rectangle(x, y, w, h);
 	}
 
-	// if rect (aka Ship) intersects another rectangle
-	public boolean touchRect(Rectangle a) {
-    	return ship.intersects(a);
-	}
-
-	// detects if fuel icon is touched
-	public boolean touchFuel() {
-		if (ship.intersects(920, 550, 50, 50) && fuelIntersect == 0) {
-			fuel = fuel + 120;
-			fuelY = fuelY - 120;
-			fuelIntersect += 1;
-
-			return true;
-		}
-		return false;
-	}
 
 	// method that checks if a bounding rectangle intersects with the background
 	// rectangles
 	// public boolean isTouchBound(Rectangle rect) {
 	// 	if (rect.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) != 1)
 	// 		return true;
-	// 	else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
+	// 	
+	// else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
 	// 		return true;
+
 	// 	else if (rect.intersects(topW, 0, 8 * w / 12, topH / 2))
 	// 		return true;
+
 	// 	else if (rect.intersects(xBoundary, botH, 2 * w / 12, 20))
 	// 		return true;
+
 	// 	else if (rect.intersects(xBoundary, 0, 1, h))
 	// 		return true;
+
 	// 	else if (rect.intersects(w - 1, 0, 1, h))
 	// 		return true;
+
 	// 	else if (rect.intersects(w / 6, h - (4 * h / 10), 250, 170))
 	// 		return true;
+
 	// 	else if (rect.intersects(w / 4, bot2H, 125, 130))
 	// 		return true;
+
 	// 	else if (rect.intersects(w / 3, h - (4 * h / 10), 300, 100))
 	// 		return true;
+
 	// 	else if (rect.intersects(w / 2, h - (6 * h / 10), 125, 400))
 	// 		return true;
+
 	// 	else if (rect.intersects(7 * w / 12, h - (h / 6), 250, 50))
 	// 		return true;
+
 	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
 	// 		return true;
+
 	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
 	// 		return true;
+
 	// 	else if (rect.intersects(750, yDrip + 10, 30, 40) && level >= 2)
 	// 		return true;
 	// 	else return rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2;
@@ -441,23 +422,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 	// }
 
-	public int fuelLevel(int a) {
-		switch (a) {
-		case 1 -> {
-                    return initialFuel;
-                }
-
-		case 2 -> {
-                    return initialFuel - 100;
-                }
-
-		case 3 -> {
-                    return initialFuel - 100;
-                }
-		}
-		return 0;
-	}
-
 	// public void nextLevel(int level) {
 	// 	resetGame(level);
 
@@ -495,54 +459,54 @@ public final class GameLogic extends JComponent implements KeyListener {
 				explosionTimer = 0;
 			}
 
-			// to ensure gravity is only in effect when game starts
-			if (numLives > 0 && start == true) {
+			// // to ensure gravity is only in effect when game starts
+			// if (numLives > 0 && start == true) {
 
-				// drip fall after level 1
-				if (level > 1) {
-					yDripVel = yDripVel + .2;
-					yDrip = yDrip + (int) yDripVel;
-					if (yDrip >= 280) {
-						puddle = true;
-						yDrip = 75;
-						yDripVel = 0;
-					}
-				}
-				if (level == 3) {
-					if (numberOn == true) {
-						numberTimer += 1;
-					}
-					if (numberTimer == 18) {
-						numberTimer = 0;
-						numberOn = false;
-					}
-					dripBallX -= 5;
-					if (dripGuyY == 402) {
-						dripGuyGoingDown = false;
-					} else if (dripGuyY == 120) {
-						dripGuyGoingDown = true;
-					}
-					if (dripGuyGoingDown) {
-						dripGuyY = dripGuyY + 3;
-						dripBallY += 3;
-					} else {
-						dripGuyY = dripGuyY - 3;
-						dripBallX -= 3;
-					}
-				}
+			// 	// drip fall after level 1
+			// 	if (level > 1) {
+			// 		yDripVel = yDripVel + .2;
+			// 		yDrip = yDrip + (int) yDripVel;
+			// 		if (yDrip >= 280) {
+			// 			puddle = true;
+			// 			yDrip = 75;
+			// 			yDripVel = 0;
+			// 		}
+			// 	}
+			// 	if (level == 3) {
+			// 		if (numberOn == true) {
+			// 			numberTimer += 1;
+			// 		}
+			// 		if (numberTimer == 18) {
+			// 			numberTimer = 0;
+			// 			numberOn = false;
+			// 		}
+			// 		dripBallX -= 5;
+			// 		if (dripGuyY == 402) {
+			// 			dripGuyGoingDown = false;
+			// 		} else if (dripGuyY == 120) {
+			// 			dripGuyGoingDown = true;
+			// 		}
+			// 		if (dripGuyGoingDown) {
+			// 			dripGuyY = dripGuyY + 3;
+			// 			dripBallY += 3;
+			// 		} else {
+			// 			dripGuyY = dripGuyY - 3;
+			// 			dripBallX -= 3;
+			// 		}
+			// 	}
 				
-				// if (isTouchBound(ship) == true) {
-				// 	explosionX = (int) x;
-				// 	explosionY = (int) y;
-				// 	explosionON = true;
-				// 	respawn();
+			// 	// if (isTouchBound(ship) == true) {
+			// 	// 	explosionX = (int) x;
+			// 	// 	explosionY = (int) y;
+			// 	// 	explosionON = true;
+			// 	// 	respawn();
 
-				// }
-				// if (isTouchBound(setRectBounds(dripBallX, dripBallY, 30, 30)) == true) {
-				// 	ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
-				// }
+			// 	// }
+			// 	// if (isTouchBound(setRectBounds(dripBallX, dripBallY, 30, 30)) == true) {
+			// 	// 	ball1.respawnBalls(initialDripBallX, dripGuyY + 20);
+			// 	// }
 
-			}
+			// }
 		}
 	}
 
@@ -563,51 +527,37 @@ public final class GameLogic extends JComponent implements KeyListener {
 			start = true;
 		}
 
-		if (numLives > 0) {
+		if(!start) { return; }
 
-			// up key
-			if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
-				shipTest.setThrust(true);
-			}
+		// up key
+		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
+			shipTest.setThrust(true);
+		}
 
-			// right key
-			if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
-				shipTest.changeAngle(true);
+		// right key
+		if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
+			shipTest.changeAngle(true);
+		}
+		// left key
+		if (e.getKeyCode() == KeyEvent.VK_LEFT ||  e.getKeyCode() == KeyEvent.VK_A) {
+			shipTest.changeAngle(false);
+		}
+
+		// p key
+		if (e.getKeyCode() == 80) {
+			if (gameWon == true) {
+				//coinCollection.resetCoins();
+				level = level + 1;
+				//nextLevel(level);
 			}
-			// left key
-			if (e.getKeyCode() == KeyEvent.VK_LEFT ||  e.getKeyCode() == KeyEvent.VK_A) {
-				shipTest.changeAngle(false);
-			}
-			// p key
-			if (e.getKeyCode() == 80) {
-				if (gameWon == true) {
-					previousScores[i] = score;
-					if (i < 3) {
-						i++;
-					}
-					//coinCollection.resetCoins();
-					level = level + 1;
-					//nextLevel(level);
-				}
-			}
-		} else {
+		}
+
 			// r key
 			if (e.getKeyCode() == 82) {
 				//resetGame(1);
-				i = 0;
 			}
-		}
-		// space key pauses for 5 seconds
-		if (e.getKeyCode() == 32) {
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e1) {
-
-				e1.printStackTrace();
-			}
-		}
-		// System.out.println("CanvasWithKeyListener.keyPressed: " + e.getKeyCode());
 	}
+	
 
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -616,12 +566,10 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// up key
+		if(!start){return;}
 		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
 			shipTest.setThrust(false);
 		}
-		// System.out.println("CanvasWithKeyListener.keyReleased: " + e.getKeyCode());
-
 	}
 
 }

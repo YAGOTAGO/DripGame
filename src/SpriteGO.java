@@ -1,9 +1,9 @@
 import java.awt.Image;
 
-public final class StaticGO extends GameObject {
+public final class SpriteGO extends GameObject {
     private final Image sprite;
 
-    public StaticGO(String folder, String fileName, int x, int y){
+    public SpriteGO(String folder, String fileName, int x, int y){
         super(x, y);
         sprite = ImageHelper.getImage(folder, fileName);
     }
