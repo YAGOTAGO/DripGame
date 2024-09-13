@@ -1,7 +1,5 @@
 import player.Player;
-import levels.Level;
-import levels.LevelTwo;
-
+import levels.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -17,8 +15,8 @@ import javax.swing.Timer;
 public final class GameLogic extends JComponent implements KeyListener {
 	
 	protected Timer timer;
-	int h = ExecuteGame.SCREENHEIGHT;
-	int w = ExecuteGame.SCREENWIDTH;
+	int h = ExecuteGame.SCREEN_HEIGHT;
+	int w = ExecuteGame.SCREEN_WIDTH;
 	private boolean gameWon = false;
 	private int level = 1;
 
@@ -60,7 +58,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		// 	add(new levels.LevelTwo(ship));
 		// }};
 
-		currLevel = new LevelTwo();
+		currLevel = new LevelThree();
 		ship = currLevel.getShip();
 
 		addKeyListener(this);

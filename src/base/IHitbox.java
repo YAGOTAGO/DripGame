@@ -11,4 +11,5 @@ public interface IHitbox {
         return this.getHitbox().intersects(target.getHitbox());
     }
     default boolean canCollide() { return true; }
+
 }

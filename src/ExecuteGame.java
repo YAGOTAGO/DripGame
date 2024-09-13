@@ -6,26 +6,25 @@ public final class ExecuteGame extends JFrame {
 
 	private static ExecuteGame instance;
 
-	public static final int SCREENHEIGHT = 800;
-	public static final int SCREENWIDTH = 1400;
-	
-	private GameLogic logic;
+	public static final int SCREEN_HEIGHT = 800;
+	public static final int SCREEN_WIDTH = 1400;
+	private final GameLogic LOGIC;
 
 	public static void main(String[] args) {
 		ExecuteGame.getInstance();
 	}
-
+	
 	private ExecuteGame(){
 		JFrame frame = new JFrame("SpaceShip Game");
-		logic = new GameLogic();
+		LOGIC = new GameLogic();
 		
 		frame.setIconImage(ImageHelper.getImage("ship", "spaceshipFlame.png"));
-        frame.setSize(SCREENWIDTH, SCREENHEIGHT);
+        frame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 		frame.setResizable(false);
 		frame.getContentPane().setBackground(Color.WHITE);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(logic);
+		frame.add(LOGIC);
 	}
 		
 	 // Public static method to provide access to the singleton instance
@@ -38,7 +37,7 @@ public final class ExecuteGame extends JFrame {
     }
 
 	public GameLogic getLogic(){
-		return logic;
+		return LOGIC;
 	}
 
 	
