@@ -1,3 +1,7 @@
+
+import java.awt.image.BufferedImage;
+
+
 public final class PlayerMovement {
     // Movement-related fields
     private double xVel;
@@ -9,13 +13,24 @@ public final class PlayerMovement {
     private final double Y_VEL_COEFFICIENT = 1;
     private final double X_VEL_COEFFICIENT = 1.2;
 
+    //Image
+    private BufferedImage flameOn;
+    private BufferedImage flameOff;
+    
+    //Angles in DEGREEs
+    private double angle;
+    private final double ANGLE_CHANGE = 15.0; 
+
     public PlayerMovement() {
         this.xVel = 0;
         this.yVel = 0;
+        this.angle = 0;
+        flameOn = ImageHelper.getBufferedImage("ship", "spaceshipFlame.png");
+        flameOff = ImageHelper.getBufferedImage("ship", "spaceship.png");
     }
 
     // Apply thrust, update velocities
-    public void applyThrust(Fuel fuel, double angle, boolean thrust) {
+    public void applyThrust(Fuel fuel, boolean thrust) {
         if (thrust & fuel.hasFuel()) {
             // Calculate velocity based on angle and thrust
             yVel -= (Y_VEL_COEFFICIENT * Math.cos(Math.toRadians(angle)));
@@ -27,6 +42,20 @@ public final class PlayerMovement {
         yVel += GRAVITY;
         yVel *= FRICTION;
         xVel *= FRICTION;
+    }
+
+    //Position, Angle, Movement
+    public void changeAngle(boolean isPositiveChange){
+        //determine the sign
+        double signedAngleChange = isPositiveChange ? ANGLE_CHANGE : -ANGLE_CHANGE;
+
+        //change the angle
+        angle += signedAngleChange;
+        angle = RotationHelper.normalizeAngle(angle);
+
+        //rotate the image
+        flameOn = RotationHelper.getRotatedBufferedImage(flameOn, signedAngleChange, angle, true);
+        flameOff = RotationHelper.getRotatedBufferedImage(flameOff, signedAngleChange, angle, false);
     }
 
     // Update X position
@@ -42,5 +71,12 @@ public final class PlayerMovement {
     public void reset(){
         yVel = 0;
         xVel = 0;
+        angle = 0;
     }
+
+    //GETTERS
+    public double getAngle(){ return angle; }
+    public BufferedImage getFlameOn(){ return flameOn; }
+    public BufferedImage getFlameOff(){ return flameOff; }
+
 }

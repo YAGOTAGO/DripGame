@@ -14,7 +14,7 @@ public final class Fuel extends GameObject{
         this.fuel = fuel;
         INIT_FUEL = fuel;
     }
-
+    
     @Override
     public Image display() {
         int filledHeight = (fuel > 0) ? (int) ((fuel / (2.0 * INIT_FUEL)) * MAX_HEIGHT) : 0;

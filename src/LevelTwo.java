@@ -1,16 +1,14 @@
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 
 public final class LevelTwo extends Level {
+    Player ship;
 
-    public LevelTwo(Player ship){
-        //Add objects in
-        Platform platform = new Platform();
-        FuelCanister fuel = new FuelCanister(100, 900, 550);
-        Queue<GameObject> hearts = ship.getHearts();
-		TerrainCollection terrainCollection = new TerrainCollection();
-        List<Coin> coins = new ArrayList<>(){{
+    public LevelTwo(){
+        ship = new Player(200);
+        registerGameObject(ship);
+        setBackground(ship);
+        registerGameObject(new FuelCollectable(100, 900, 550));
+        registerGameObject(new ArrayList<>(){{
             //patern at the start
             add(new Coin(250, 400));
             add(new Coin(250, 200));
@@ -35,34 +33,14 @@ public final class LevelTwo extends Level {
             //down to hole
             add(new Coin(900, 250));
             add(new Coin(900, 400));
-        }};
-        
-        //Draw objects
-        setBackground();
-		objectsToDraw.add(ship.getFuel());
-		objectsToDraw.add(new SpriteGO("UI", "fuelCanister.png", 60, 42));
-		objectsToDraw.addAll(hearts);
-		objectsToDraw.addAll(coins);
-        objectsToDraw.add(fuel);
-		objectsToDraw.add(ship);
-        objectsToDraw.add(platform);
-        DripDrop dropOne = new DripDrop(objectsToDraw, 740, 75);
-        DripDrop dropTwo = new DripDrop(objectsToDraw, 1100, 75);
-        objectsToDraw.add(dropOne);
-        objectsToDraw.add(dropTwo);
+        }});
+		registerGameObject(new SpriteGO("UI", "fuelCanister.png", 60, 42));
+        registerGameObject(new DripDrop(740, 75));
+        registerGameObject(new DripDrop(1100, 75));
+    }
 
-        //Collidables
-		collidables.addAll(coins);
-		collidables.addAll(terrainCollection.getTerrainList());
-		collidables.add(platform);
-        collidables.add(fuel);
-        collidables.add(dropTwo);
-        collidables.add(dropOne);
-
-        //Movables
-        movables.add(fuel);
-        movables.add(dropOne);
-        movables.add(dropTwo);
-
+    @Override
+    public Player getShip() {
+        return ship;
     }
 }

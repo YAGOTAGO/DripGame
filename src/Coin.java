@@ -8,8 +8,9 @@ public class Coin extends AnimatedGO implements IHitbox{
     public Coin(int x, int y) {
         super("coin", .5, x, y);
         hitBox = new Rectangle(x, y, 50, 50);
+        randomizeCurrFrame();
     }
-
+    
     @Override
     public Rectangle getHitbox() {
         return hitBox;

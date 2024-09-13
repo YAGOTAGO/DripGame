@@ -45,17 +45,13 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 	DripBalls ball1 = new DripBalls(dripBallX, dripBallY);
 
-	
-	private List<GameObject> objectsToDraw;
-	private List<IHitbox> collidables;
-	private List<IMovable> movables; 
-
 	private Player ship;
 	private final boolean DEBUG_MODE = true;
 	private int score = 0;
 	private int[] previousScores = new int[2];
 	private boolean start = true;
 	private List<Level> levels;
+	private Level currLevel;
 
 	/**
 	 * Program is a spaceship video game
@@ -67,18 +63,14 @@ public final class GameLogic extends JComponent implements KeyListener {
 		super();
 		timer = new Timer(50, new TimerCallback()); // 50 ms = 0.05 sec
 		
-		
 		// levels = new ArrayList<>(){{
 		// 	add(new LevelOne(ship));
 		// 	add(new LevelTwo(ship));
 		// }};
 
-		
-		Level levelOne = new LevelTwo(ship);
-		objectsToDraw = levelOne.getObjectDrawList();
-		collidables = levelOne.getCollidablesList();
-		movables = levelOne.getMovablesList();
-		ship = new Player(objectsToDraw, 250);
+		currLevel = new LevelTwo();
+		ship = currLevel.getShip();
+
 		addKeyListener(this);
 		setFocusable(true);
 		timer.start();
@@ -87,12 +79,8 @@ public final class GameLogic extends JComponent implements KeyListener {
     @Override
 	public void paintComponent(Graphics g) {
 
-		for(GameObject go : objectsToDraw){
-			if(go.canDraw()){
-				g.drawImage(go.display(), go.getX(), go.getY(), this);
-			}
-		}
-
+		currLevel.drawLevel(g, this);
+		
 		// score, level and fuel
 		Font newFont = new Font("Helvetica", Font.BOLD, 30);
 		g.setFont(newFont);
@@ -101,26 +89,14 @@ public final class GameLogic extends JComponent implements KeyListener {
 		newFont = new Font("Helvetica", Font.BOLD, 14);
 		g.setFont(newFont);
 		g.drawString("FUEL: " + ship.getFuelAmount(), 55, 37);
-		
+
 		if(DEBUG_MODE){
 			g.setColor(Color.RED);
 			Rectangle temp = ship.getHitbox();
 			g.drawRect(temp.x, temp.y, temp.width, temp.height);
 		}
 		
-		for(IMovable elem : movables){
-			elem.move();
-		}
-
-		for(IHitbox curr : collidables){
-			if(DEBUG_MODE){
-				Rectangle r = curr.getHitbox();
-				g.drawRect(r.x, r.y, r.width, r.height);
-			}
-			if(curr.canCollide() && curr.intersects(ship)){
-				curr.onHit(ship);
-			}
-		}
+		
 
 		// // start screen
 		// if (start == false) {
@@ -300,19 +276,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 		score += change;
 	}
 
-	public void removeObjectFromDraw(GameObject go){
-		objectsToDraw.remove(go);
-	}
-
-	public void addDrawable(GameObject go){
-		objectsToDraw.add(go);
-	}
-
-	public Rectangle setRectBounds(int x, int y, int w, int h) {
-		return new Rectangle(x, y, w, h);
-	}
-
-
 	// method that checks if a bounding rectangle intersects with the background
 	// rectangles
 	// public boolean isTouchBound(Rectangle rect) {
@@ -426,16 +389,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 			repaint();
 
-
-
-			if (explosionON == true) {
-				explosionTimer = explosionTimer + 1;
-			}
-			if (explosionTimer == 6) {
-				explosionON = false;
-				explosionTimer = 0;
-			}
-
 			// // to ensure gravity is only in effect when game starts
 			// if (numLives > 0 && start == true) {
 
@@ -505,7 +458,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		}
 
 		if(!start) { return; }
-
+		
 		// up key
 		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
 			ship.setThrust(true);

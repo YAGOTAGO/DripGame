@@ -19,7 +19,7 @@ public final class PlayerHealth {
     }
 
     public int takeDamage(){
-        ExecuteGame.getInstance().getLogic().removeObjectFromDraw(hearts.poll());
+        //hearts.poll().canDraw = false; //may cause issues with reset
         return --health;
     }
 

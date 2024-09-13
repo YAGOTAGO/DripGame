@@ -83,6 +83,5 @@ public final class ImageHelper {
         }
         return false;
     }
-
 }
 

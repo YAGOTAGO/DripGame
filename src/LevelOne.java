@@ -1,16 +1,14 @@
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
 
 public final class LevelOne extends Level{
-    
-    public LevelOne(Player ship){
-        //Add objects in
-        Platform platform = new Platform();
-        Queue<GameObject> hearts = ship.getHearts();
-		TerrainCollection terrainCollection = new TerrainCollection();
-        List<Coin> coins = new ArrayList<>(){{
+    Player ship;
+
+    public LevelOne(){
+        ship = new Player(250);
+        registerGameObject(ship);
+        setBackground(ship);
+        registerGameObject(new ArrayList<>(){{
             
             //patern at the start
             add(new Coin(250, 400));
@@ -37,20 +35,11 @@ public final class LevelOne extends Level{
             add(new Coin(900, 250));
             add(new Coin(900, 400));
             add(new Coin(900, 550));
-        }};
-        
-        //Draw objects
-        setBackground();
-		objectsToDraw.add(ship.getFuel());
-		objectsToDraw.add(new SpriteGO("UI", "fuelCanister.png", 60, 42));
-		objectsToDraw.addAll(hearts);
-		objectsToDraw.addAll(coins);
-		objectsToDraw.add(ship);
-        objectsToDraw.add(platform);
+        }});
+    }
 
-        //Collidables
-		collidables.addAll(coins);
-		collidables.addAll(terrainCollection.getTerrainList());
-		collidables.add(platform);
+    @Override
+    public Player getShip() {
+        return ship;
     }
 }

@@ -1,13 +1,13 @@
 import java.awt.Rectangle;
 
-public final class FuelCanister extends SpriteGO implements IHitbox, IMovable{
+public final class FuelCollectable extends SpriteGO implements IHitbox, IMovable{
     private final Rectangle HITBOX;
     private final int FUEL_AMOUNT;
     private boolean canCollide = true;
     private final int START_X_POS;
     private boolean movingRight = true;
-
-    public FuelCanister(int fuelAmount, int x, int y) {
+    
+    public FuelCollectable(int fuelAmount, int x, int y) {
         super("UI", "fuel.png", x, y);
         this.FUEL_AMOUNT = fuelAmount;
         START_X_POS = x;

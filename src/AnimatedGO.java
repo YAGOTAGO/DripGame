@@ -3,20 +3,20 @@ import java.util.List;
 import java.util.Random;
 
 public class AnimatedGO extends GameObject{
-    List<Image> animation;
-    double currFrame;
-    double animationRate;
-    int maxFrames;
-    
+    protected List<Image> animation;
+    protected double currFrame;
+    protected double animationRate;
+    protected int maxFrames;
+        
     public AnimatedGO(String folder, double animationRate, int x, int y){
         super(x, y);
         this.animationRate = animationRate;
         animation = ImageHelper.getAnimation(folder);
         maxFrames = animation.size() - 1;
-        randomizeCurrFrame();
+        currFrame = 0;
     }
 
-    private void randomizeCurrFrame(){
+    protected void randomizeCurrFrame(){
         Random Random = new Random();
         currFrame = Random.nextInt(maxFrames);
     }
