@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
@@ -26,9 +24,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 	private int explosionY;
 	private boolean explosionON = false;
 	private int explosionTimer = 0;
-	private int chestIntersection = 0;
-	private int platformX = 1177;
-	private int platformY = 620;
 
 	// y value of drip which used to be a rock
 	private int yDrip = 75;
@@ -53,12 +48,12 @@ public final class GameLogic extends JComponent implements KeyListener {
 	
 	private List<GameObject> objectsToDraw;
 	private List<IHitbox> collidables;
-	private Player shipTest;
+	private Player ship;
 	private final boolean DEBUG_MODE = true;
 	private int score = 0;
 	private int[] previousScores = new int[2];
 	private boolean start = true;
-
+	private List<Level> levels;
 
 	/**
 	 * Program is a spaceship video game
@@ -68,43 +63,19 @@ public final class GameLogic extends JComponent implements KeyListener {
 	 */
 	public GameLogic() { 
 		super();
-		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
+		timer = new Timer(50, new TimerCallback()); // 50 ms = 0.05 sec
 		timer.start();
-
-		//new way
-		objectsToDraw = new ArrayList<>();
-		collidables = new ArrayList<>();
-
-		//player
-		Fuel fuelGO = new Fuel(100);
-		shipTest = new Player(fuelGO);
-
-		//coins
-		Coin coin1 = new Coin(250, 400);
-		Coin coin2 = new Coin(500, 400);
-		Platform platform = new Platform();
 		
-		objectsToDraw.add(new SpriteGO("screen", "background.png", 0, 0));
-		objectsToDraw.add(new SpriteGO("enviornment", "cliffBot.png", -10, -30));
-		objectsToDraw.add(new SpriteGO("enviornment", "cliffTop.png", -10, -30));
-		objectsToDraw.add(platform);
-		objectsToDraw.add(new SpriteGO("UI", "metal.png", 0, 0));
-		objectsToDraw.add(fuelGO);
-		objectsToDraw.add(new SpriteGO("UI", "fuelCanister.png", 60, 42));
+		// levels = new ArrayList<>(){{
+		// 	add(new LevelOne(ship));
+		// 	add(new LevelTwo(ship));
+		// }};
 
-		Queue<GameObject> hearts = shipTest.getHearts();
-		objectsToDraw.addAll(hearts);
+		ship = new Player(250);
+		Level levelOne = new LevelTwo(ship);
 
-		objectsToDraw.add(coin1);
-		objectsToDraw.add(coin2);
-		objectsToDraw.add(shipTest);
-		
-
-		TerrainCollection terrainCollection = new TerrainCollection();
-		collidables.add(coin1);
-		collidables.add(coin2);
-		collidables.addAll(terrainCollection.getTerrainList());
-		collidables.add(platform);
+		objectsToDraw = levelOne.getObjectDrawList();
+		collidables = levelOne.getCollidablesList();
 
 		addKeyListener(this);
 		setFocusable(true);
@@ -126,11 +97,11 @@ public final class GameLogic extends JComponent implements KeyListener {
 		g.drawString("Level " + level, 155, 160);
 		newFont = new Font("Helvetica", Font.BOLD, 14);
 		g.setFont(newFont);
-		g.drawString("FUEL: " + shipTest.getFuel(), 55, 37);
-
+		g.drawString("FUEL: " + ship.getFuelAmount(), 55, 37);
+		
 		if(DEBUG_MODE){
 			g.setColor(Color.RED);
-			Rectangle temp = shipTest.getHitbox();
+			Rectangle temp = ship.getHitbox();
 			g.drawRect(temp.x, temp.y, temp.width, temp.height);
 		}
 		
@@ -139,8 +110,8 @@ public final class GameLogic extends JComponent implements KeyListener {
 				Rectangle r = curr.getHitbox();
 				g.drawRect(r.x, r.y, r.width, r.height);
 			}
-			if(curr.canCollide() && curr.intersects(shipTest)){
-				curr.onHit(shipTest);
+			if(curr.canCollide() && curr.intersects(ship)){
+				curr.onHit(ship);
 			}
 		}
 
@@ -445,7 +416,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 
         @Override
 		public void actionPerformed(ActionEvent e) {
-			shipTest.move();
+			ship.move();
 
 			repaint();
 
@@ -531,16 +502,16 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 		// up key
 		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
-			shipTest.setThrust(true);
+			ship.setThrust(true);
 		}
 
 		// right key
 		if ((e.getKeyCode() == KeyEvent.VK_RIGHT) || (e.getKeyCode() == KeyEvent.VK_D)) {
-			shipTest.changeAngle(true);
+			ship.changeAngle(true);
 		}
 		// left key
 		if (e.getKeyCode() == KeyEvent.VK_LEFT ||  e.getKeyCode() == KeyEvent.VK_A) {
-			shipTest.changeAngle(false);
+			ship.changeAngle(false);
 		}
 
 		// p key
@@ -568,7 +539,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 	public void keyReleased(KeyEvent e) {
 		if(!start){return;}
 		if ((e.getKeyCode() == KeyEvent.VK_UP) || (e.getKeyCode() == KeyEvent.VK_W)) {
-			shipTest.setThrust(false);
+			ship.setThrust(false);
 		}
 	}
 

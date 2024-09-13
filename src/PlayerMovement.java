@@ -39,4 +39,8 @@ public final class PlayerMovement {
         return yPos + (int) yVel;
     }
 
+    public void reset(){
+        yVel = 0;
+        xVel = 0;
+    }
 }

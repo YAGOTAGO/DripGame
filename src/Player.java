@@ -5,9 +5,9 @@ import java.awt.image.BufferedImage;
 import java.util.Queue;
 
 public final class Player extends GameObject implements IHitbox {
-    private Rectangle hitBox;
-    private Fuel fuel;
-    private PlayerHealth health;
+    private final Rectangle hitBox;
+    private final Fuel fuel;
+    private final PlayerHealth health;
 
     //spawn pos
     private final int SPAWN_POS_X = 50;
@@ -22,14 +22,14 @@ public final class Player extends GameObject implements IHitbox {
     //Move variables
     private final PlayerMovement movement;
     private boolean thrust = false;
-    
+
     //Angles in DEGREEs
     private double angle;
     private final double ANGLE_CHANGE = 15.0; 
     
-    public Player(Fuel fuel){
+    public Player(int fuel){
         super(50, 300); 
-        this.fuel = fuel;
+        this.fuel = new Fuel(fuel);
         hitBox = new Rectangle(SPAWN_POS_X, SPAWN_POS_Y, WIDTH, HEIGHT);
         flameOn = ImageHelper.getBufferedImage("ship", "spaceshipFlame.png");
         flameOff = ImageHelper.getBufferedImage("ship", "spaceship.png");
@@ -47,11 +47,16 @@ public final class Player extends GameObject implements IHitbox {
             angle = 0;
             fuel.resetFuel();
             changePosition(SPAWN_POS_X, SPAWN_POS_Y);
+            movement.reset();
         }else{
             //lose the game
         }
     }
-
+    
+    public void changeFuel(int amount){
+        fuel.gainFuel(amount);
+    }
+    
     //Position, Angle, Movement
     public void changeAngle(boolean isPositiveChange){
         //determine the sign
@@ -81,7 +86,8 @@ public final class Player extends GameObject implements IHitbox {
     //GETTERS
     @Override
     public Rectangle getHitbox() { return hitBox;  }
-    public int getFuel(){ return fuel.getFuel(); }
+    public int getFuelAmount(){ return fuel.getFuel(); }
+    public Fuel getFuel() { return fuel; }
     public double getAngle() { return angle; }
     public Queue<GameObject> getHearts(){ return health.getHearts(); }   
 

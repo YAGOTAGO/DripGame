@@ -4,21 +4,14 @@ import java.util.Queue;
 public final class PlayerHealth {
     
     int health = 3;
-
-    SpriteGO heart1;
-    SpriteGO heart2;
-    SpriteGO heart3;
-
     Queue<GameObject> hearts;
-
+    
     public PlayerHealth(){
-        hearts = new LinkedList<>();
-        heart1 = new SpriteGO("UI", "heart.png", 150, 80);
-        heart2 = new SpriteGO("UI", "heart.png", 200, 80);
-        heart3 = new SpriteGO("UI", "heart.png", 250, 80);
-        hearts.add(heart1);
-        hearts.add(heart2);
-        hearts.add(heart3);
+        hearts = new LinkedList<>(){{
+            add(new SpriteGO("UI", "heart.png", 150, 80));
+            add(new SpriteGO("UI", "heart.png", 200, 80));
+            add(new SpriteGO("UI", "heart.png", 250, 80));
+        }};
     }
 
     public Queue<GameObject> getHearts(){

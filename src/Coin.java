@@ -14,7 +14,7 @@ public class Coin extends AnimatedGO implements IHitbox{
     public Rectangle getHitbox() {
         return hitBox;
     }
-
+    
     @Override
     public void onHit(Player player) {
         ExecuteGame.getInstance().getLogic().updateScore(COIN_VALUE);

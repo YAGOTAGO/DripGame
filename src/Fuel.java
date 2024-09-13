@@ -8,7 +8,7 @@ public final class Fuel extends GameObject{
     private int fuel;
     private final int WIDTH = 20;
     private final int MAX_HEIGHT = 200;
-        
+
     public Fuel(int fuel) {
         super(85, -50);
         this.fuel = fuel;
@@ -31,6 +31,10 @@ public final class Fuel extends GameObject{
 
     public void useFuel(int reduceBy){
         fuel = Math.max(0, fuel - reduceBy); // Ensure fuel does not go below 0
+    }
+
+    public void gainFuel(int amount){
+        fuel += amount;
     }
 
     public boolean hasFuel(){

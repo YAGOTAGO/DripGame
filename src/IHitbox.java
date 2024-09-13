@@ -1,7 +1,6 @@
 import java.awt.Rectangle;
 
 public interface IHitbox {  
-    
     public Rectangle getHitbox();
     public void onHit(Player player);   
     default boolean intersects(IHitbox target) {
