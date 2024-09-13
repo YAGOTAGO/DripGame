@@ -1,11 +1,11 @@
 package levels;
 
+import base.*;
+import gameobjects.*;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 import java.util.*;
-import base.*;
-import gameobjects.*;
 import player.Player;
 
 public abstract class Level {

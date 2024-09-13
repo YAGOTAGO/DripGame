@@ -1,7 +1,6 @@
-import utils.ImageHelper;
-
 import java.awt.Color;
 import javax.swing.JFrame;
+import utils.ImageHelper;
 
 public final class ExecuteGame extends JFrame {
 
