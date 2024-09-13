@@ -9,13 +9,11 @@ import java.awt.*;
 
 public class DripProjectile extends SpriteGO implements IMovable, IHitbox {
     private final Rectangle HIT_BOX;
-    private final int START_X_POS;
     private boolean canCollide;
     private final int SPEED = 7;
     public DripProjectile(int x, int y) {
         super("drip", "dripBall.png", x, y);
         HIT_BOX = new Rectangle(x, y, 27, 27);
-        START_X_POS = x;
         canDraw = false;
         canCollide = false;
     }

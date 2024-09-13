@@ -13,7 +13,7 @@ public class LevelThree extends Level{
         ship = new Player(200);
         registerGameObject(ship);
         setBackground(ship);
-        registerGameObject(new Chest(870, 524));
+        registerGameObject(new Chest(1000, 870, 524));
 
         registerGameObject(new ArrayList<>(){{
             //pattern at the start

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DripGuy extends SpriteGO implements IMovable, IParentGO, IHitbox {
 
-    private DripProjectile projectile;
+    private final DripProjectile PROJECTILE;
     private final Rectangle HIT_BOX;
     private final int MAX_HEIGHT = 400;
     private final int MIN_HEIGHT = 120;
@@ -17,10 +17,10 @@ public class DripGuy extends SpriteGO implements IMovable, IParentGO, IHitbox {
     private final int MOVE_SPEED = 2;
 
     private final int TIMER = 65;
-    private int count = 0;
+    private int count = 65;
     public DripGuy() {
         super("drip", "dripGuy.png", 910, 120);
-        projectile = new DripProjectile(910, 120);
+        PROJECTILE = new DripProjectile(910, 120);
         HIT_BOX = new Rectangle(910, 120, 60, 60);
     }
 
@@ -35,12 +35,12 @@ public class DripGuy extends SpriteGO implements IMovable, IParentGO, IHitbox {
         count++;
         if(count >= TIMER){
             count = 0;
-            projectile.shoot(xPos, yPos);
+            PROJECTILE.shoot(xPos, yPos);
         }
     }
     @Override
     public List<GameObject> getChildObjectsToDraw() {
-        return Collections.singletonList(projectile);
+        return Collections.singletonList(PROJECTILE);
     }
 
     @Override

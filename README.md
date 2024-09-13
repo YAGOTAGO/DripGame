@@ -7,7 +7,7 @@ Hopefully you enjoy the game as much as I enjoyed making it!
 All the art was done by **Mina Stevens** and of course all the code was done by **Tiago Davies**.
 
 ## Build Instructions:
-Compile **ALL** classes and Run the ExecuteGame.java.
+Compile **ALL** classes and Run the game.ExecuteGame.java.
 
 ## Controls:
 Press [s] to start. 
@@ -38,7 +38,7 @@ Landing sideways or slightly slanted will cause a crash and respawn.
 
 ## Description of the classes:
 
-### ExecuteGame.java:
+### game.ExecuteGame.java:
 Sets the window size and adds the game to the window. Resizable is set to false, so that all the art can be displayed with its full resolution.
 
 ### FlyingDrone.java:
