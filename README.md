@@ -49,7 +49,7 @@ Furthermore, the class has some variables such as, m, c, which are used to make 
 ### GoldCoins.java:
 Used to keep track of whether a coin has been picked up.
 
-### DripBalls.java:
+### gameobjects.DripBalls.java:
 Keeps track of the drips position.
 If you look closely you will notice the drips leave a puddle behind!
 
