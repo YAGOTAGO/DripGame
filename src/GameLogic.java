@@ -1,3 +1,7 @@
+import player.Player;
+import levels.Level;
+import levels.LevelTwo;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -15,23 +19,13 @@ public final class GameLogic extends JComponent implements KeyListener {
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
 	int w = ExecuteGame.SCREENWIDTH;
-
 	private boolean gameWon = false;
 	private int level = 1;
-
-	private int fuelIntersect = 0;
-	private int explosionX;
-	private int explosionY;
-	private boolean explosionON = false;
-	private int explosionTimer = 0;
 
 	// y value of drip which used to be a rock
 	private int yDrip = 75;
 	private double yDripVel = 0;
 	private boolean puddle = false;
-	private int initialFuelY = 0;
-	private int fuelY = initialFuelY;
-
 	public static int dripGuyY = 120;
 	private int dripGuyX = 910;
 	private boolean dripGuyGoingDown = true;
@@ -42,8 +36,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 	public static int initialDripBallX = 925;
 	public static int dripBallX = initialDripBallX;
 	public static int dripBallY = dripGuyY + 20;
-
-	DripBalls ball1 = new DripBalls(dripBallX, dripBallY);
 
 	private Player ship;
 	private final boolean DEBUG_MODE = true;
@@ -64,8 +56,8 @@ public final class GameLogic extends JComponent implements KeyListener {
 		timer = new Timer(50, new TimerCallback()); // 50 ms = 0.05 sec
 		
 		// levels = new ArrayList<>(){{
-		// 	add(new LevelOne(ship));
-		// 	add(new LevelTwo(ship));
+		// 	add(new levels.LevelOne(ship));
+		// 	add(new levels.LevelTwo(ship));
 		// }};
 
 		currLevel = new LevelTwo();
@@ -85,7 +77,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		Font newFont = new Font("Helvetica", Font.BOLD, 30);
 		g.setFont(newFont);
 		g.drawString("Score: " + String.valueOf(score), 150, 60);
-		g.drawString("Level " + level, 155, 160);
+		g.drawString("levels.Level " + level, 155, 160);
 		newFont = new Font("Helvetica", Font.BOLD, 14);
 		g.setFont(newFont);
 		g.drawString("FUEL: " + ship.getFuelAmount(), 55, 37);
@@ -95,64 +87,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 			Rectangle temp = ship.getHitbox();
 			g.drawRect(temp.x, temp.y, temp.width, temp.height);
 		}
-		
-		
-
-		// // start screen
-		// if (start == false) {
-		// 	g.drawImage(startBackground, 0, 0, this);
-		// } else {
-		
-		// 	if (explosionON == true) {
-		// 		//g.drawImage(explosion[(int) explosionTimer], explosionX - 50, explosionY - 20, this);
-		// 	}
-		// 	// System.out.println("X cord: " + explosionX + " Y cord: " + explosionY);
-
-		// 	// spaceship image
-		// 	BufferedImage in = null;
-		// 	try {
-		// 		if (flameOn == true && fuel > 0) {
-		// 			in = ImageIO.read(new File("images\\ship\\spaceshipFlame.png"));
-		// 			yVelocity = yVelocity - yVelCoefficient * Math.sin(theta);
-		// 			xVelocity = xVelocity + xVelCoefficient * Math.cos(theta);
-		// 			x = x + (int) xVelocity;
-		// 			y = y + (int) yVelocity;
-		// 			fuel = fuel - 1;
-		// 			fuelY = fuelY + 1;
-		// 		} else {
-		// 			in = ImageIO.read(new File("images\\ship\\spaceship.png"));
-		// 		}
-		// 	} catch (IOException e) {
-		// 		System.out.println("didnt work: " + e);
-		// 	}
-
-		// 	BufferedImage newImage = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-		// 	if (theta == Math.PI / 2) {
-		// 		g.drawImage(in, (int) x - 13, (int) y - 3, this);
-		// 	}
-		// 	double rotationRequired = Math.PI / 2 - theta;
-		// 	double locationX = newImage.getWidth() / 2;
-		// 	double locationY = newImage.getHeight() / 2;
-		// 	AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
-		// 	AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-
-		// 	// Drawing the rotated image at the required drawing locations
-		// 	g.drawImage(op.filter(in, null), (int) x - 13, (int) y - 3, this);
-
-		// 	ship = new Rectangle(x, y, 45, 55);
-		// 	// commented out but would should hitbox
-		// 	// g2.setColor(Color.RED);
-		// 	// g2.draw(at.createTransformedShape(rect));
-
-		// 	//score += (100 * coinCollection.hitCoins(ship)); //increase value per hit coin
-			
-		// 	for (Collectible c : collidables){
-		// 		if(c.intersects(ship)){
-		// 			c.onCollected();
-		// 		}
-		// 	}
-			
 
 		// 	if (level != 3) {
 		// 		// fuel icon interaction
@@ -254,7 +188,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		// 			g.setColor(Color.WHITE);
 		// 			newFont = new Font("Helvetica", Font.BOLD, 80);
 		// 			g.setFont(newFont);
-		// 			g.drawString("Level " + level + " score: " + score, 350, 300);
+		// 			g.drawString("levels.Level " + level + " score: " + score, 350, 300);
 		// 			g.drawString("Press [p] for next level", 300, 500);
 		// 			if (i > 0) {
 		// 				g.drawString("Total Scores: " + String.valueOf(arraySum(previousScores) + score), 350, 400);
@@ -275,111 +209,6 @@ public final class GameLogic extends JComponent implements KeyListener {
 	public void updateScore(int change){
 		score += change;
 	}
-
-	// method that checks if a bounding rectangle intersects with the background
-	// rectangles
-	// public boolean isTouchBound(Rectangle rect) {
-	// 	if (rect.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) != 1)
-	// 		return true;
-	// 	
-	// else if (rect.intersects(xBoundary, 0, 4 * w / 12, topH))
-	// 		return true;
-
-	// 	else if (rect.intersects(topW, 0, 8 * w / 12, topH / 2))
-	// 		return true;
-
-	// 	else if (rect.intersects(xBoundary, botH, 2 * w / 12, 20))
-	// 		return true;
-
-	// 	else if (rect.intersects(xBoundary, 0, 1, h))
-	// 		return true;
-
-	// 	else if (rect.intersects(w - 1, 0, 1, h))
-	// 		return true;
-
-	// 	else if (rect.intersects(w / 6, h - (4 * h / 10), 250, 170))
-	// 		return true;
-
-	// 	else if (rect.intersects(w / 4, bot2H, 125, 130))
-	// 		return true;
-
-	// 	else if (rect.intersects(w / 3, h - (4 * h / 10), 300, 100))
-	// 		return true;
-
-	// 	else if (rect.intersects(w / 2, h - (6 * h / 10), 125, 400))
-	// 		return true;
-
-	// 	else if (rect.intersects(7 * w / 12, h - (h / 6), 250, 50))
-	// 		return true;
-
-	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
-	// 		return true;
-
-	// 	else if (rect.intersects(9 * w / 12, h - (6 * h / 10), 125, 400))
-	// 		return true;
-
-	// 	else if (rect.intersects(750, yDrip + 10, 30, 40) && level >= 2)
-	// 		return true;
-	// 	else return rect.intersects(1110, yDrip + 10, 30, 40) && level >= 2;
-		
-	// }
-
-	// public boolean haveWon() {
-
-	// 	if (ship.intersects(10 * w / 12, h - (h / 6), 240, 50) && Math.sin(theta) == 1)
-	// 		return true;
-	// 	else
-	// 		return false;
-
-	// }
-
-	// public void respawn() {
-	// 	numLives = numLives - 1;
-	// 	x = initialX;
-	// 	y = initialY;
-	// 	//theta = initialTheta;
-	// 	fuel = fuelLevel(level);
-	// 	score = score - 100;
-	// 	fuelIntersect = 0;
-	// 	fuelY = initialFuelY;
-	// 	repaint();
-
-	// }
-
-	// public void resetGame(int level) {
-
-	// 	//coinCollection.resetCoins();
-	// 	x = initialX;
-	// 	y = initialY;
-	// 	//theta = initialTheta;
-	// 	this.level = level;
-	// 	fuel = fuelLevel(this.level);
-	// 	score = 0;
-	// 	numLives = 3;
-	// 	gameWon = false;
-	// 	fuelIntersect = 0;
-	// 	fuelY = initialFuelY;
-
-	// }
-
-	// public void nextLevel(int level) {
-	// 	resetGame(level);
-
-	// 	switch (level) {
-	// 	case 2 -> {
-    //                 // level =2;
-    //                 numLives = 3;
-    //                 fuel = initialFuel - 100;
-    //             }
-	// 	case 3 -> {
-    //                 // level = 3;
-    //                 numLives = 3;
-    //                 fuel = initialFuel - 100;
-    //             }
-
-	// 	}
-	// 	repaint();
-	// }
 
 	protected class TimerCallback implements ActionListener {
 

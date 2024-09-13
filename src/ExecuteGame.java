@@ -1,3 +1,5 @@
+import utils.ImageHelper;
+
 import java.awt.Color;
 import javax.swing.JFrame;
 
