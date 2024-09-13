@@ -1,4 +1,10 @@
-.class
-src/**/*.class
-.classpath
-.project
+# IntelliJ IDEA specific
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Output directories
+/out/
+*.class
+
