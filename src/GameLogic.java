@@ -17,10 +17,8 @@ public final class GameLogic extends JComponent implements KeyListener {
 	protected Timer timer;
 	int h = ExecuteGame.SCREENHEIGHT;
 	int w = ExecuteGame.SCREENWIDTH;
-	private int initialY = 300;
-	private int initialX = 50;
-	private int x = initialX;
-	private int y = initialY;
+	private int score = 0;
+
 	private int xBoundary = 0;
 	private int numLives = 3;
 	private int topH = h / 4;
@@ -30,7 +28,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 	int bot2H = h - (h / 2);
 	private Rectangle ship = null;
 	private Rectangle rectFuel;
-	public static int score = 0;
+	
 	private int initialFuel = 400;
 	private int fuel = initialFuel;
 	private boolean gameWon = false;
@@ -82,9 +80,9 @@ public final class GameLogic extends JComponent implements KeyListener {
 	private Image dripGuy = ImageHelper.getImage("drip", "dripGuy.png");
 	private Image dripBall = ImageHelper.getImage("drip", "dripBall.png");
 
-
+	
 	//Animated stuff
-	List<GameObject> objectsToDraw;
+	private List<GameObject> objectsToDraw;
 	List<IHitbox> collidables;
 	Player shipTest;
 
@@ -94,7 +92,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 	 * @author Tiago Davies
 	 * @artist Mina Stevens
 	 */
-	public GameLogic() {
+	public GameLogic() { 
 		super();
 		timer = new Timer(50, new TimerCallback()); // 100 ms = 0.1 sec
 		timer.start();
@@ -112,7 +110,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		//coins
 		Coin coin1 = new Coin("coin", 250, 400);
 		Coin coin2 = new Coin("coin", 500, 400);
-
+		
 		objectsToDraw.add(new StaticGO("screen", "background.png", 0, 0));
 		objectsToDraw.add(new StaticGO("enviornment", "cliffBot.png", -10, -30));
 		objectsToDraw.add(new StaticGO("enviornment", "cliffTop.png", -10, -30));
@@ -126,7 +124,7 @@ public final class GameLogic extends JComponent implements KeyListener {
 		for(GameObject heart : hearts){
 			objectsToDraw.add(heart);
 		}
-		
+
 		objectsToDraw.add(coin1);
 		objectsToDraw.add(coin2);
 		objectsToDraw.add(shipTest);
@@ -142,7 +140,9 @@ public final class GameLogic extends JComponent implements KeyListener {
 	public void paintComponent(Graphics g) {
 
 		for(GameObject go : objectsToDraw){
-			g.drawImage(go.display(), go.getX(), go.getY(), this);
+			if(go.canDraw()){
+				g.drawImage(go.display(), go.getX(), go.getY(), this);
+			}
 		}
 
 		// score, level and fuel
@@ -153,6 +153,13 @@ public final class GameLogic extends JComponent implements KeyListener {
 		newFont = new Font("Helvetica", Font.BOLD, 14);
 		g.setFont(newFont);
 		g.drawString("FUEL: " + fuel, 55, 37);
+
+
+		for(IHitbox curr : collidables){
+			if(curr.canCollide() && curr.intersects(shipTest)){
+				curr.onHit(shipTest);
+			}
+		}
 
 		// // start screen
 		// if (start == false) {
@@ -204,14 +211,11 @@ public final class GameLogic extends JComponent implements KeyListener {
 		// 	//score += (100 * coinCollection.hitCoins(ship)); //increase value per hit coin
 			
 		// 	for (Collectible c : collidables){
-		// 		if(c.checkHit(ship)){
+		// 		if(c.intersects(ship)){
 		// 			c.onCollected();
 		// 		}
 		// 	}
 			
-		// 	for (IAnimated e : animations) {
-		// 		g.drawImage(e.GetFrame(), e.getX(), e.getY(), this);
-		// 	}
 
 		// 	if (level != 3) {
 		// 		// fuel icon interaction
@@ -331,6 +335,18 @@ public final class GameLogic extends JComponent implements KeyListener {
 		// }
 	}
 
+	public void updateScore(int change){
+		score += change;
+	}
+
+	public void removeObjectFromDraw(GameObject go){
+		objectsToDraw.remove(go);
+	}
+
+	public void removeObjectFromCollide(IHitbox go){
+		collidables.remove(go);
+	}
+
 	public Rectangle setRectBounds(int x, int y, int w, int h) {
 		return new Rectangle(x, y, w, h);
 	}
@@ -396,34 +412,34 @@ public final class GameLogic extends JComponent implements KeyListener {
 
 	// }
 
-	public void respawn() {
-		numLives = numLives - 1;
-		x = initialX;
-		y = initialY;
-		//theta = initialTheta;
-		fuel = fuelLevel(level);
-		score = score - 100;
-		fuelIntersect = 0;
-		fuelY = initialFuelY;
-		repaint();
+	// public void respawn() {
+	// 	numLives = numLives - 1;
+	// 	x = initialX;
+	// 	y = initialY;
+	// 	//theta = initialTheta;
+	// 	fuel = fuelLevel(level);
+	// 	score = score - 100;
+	// 	fuelIntersect = 0;
+	// 	fuelY = initialFuelY;
+	// 	repaint();
 
-	}
+	// }
 
-	public void resetGame(int level) {
+	// public void resetGame(int level) {
 
-		//coinCollection.resetCoins();
-		x = initialX;
-		y = initialY;
-		//theta = initialTheta;
-		this.level = level;
-		fuel = fuelLevel(this.level);
-		score = 0;
-		numLives = 3;
-		gameWon = false;
-		fuelIntersect = 0;
-		fuelY = initialFuelY;
+	// 	//coinCollection.resetCoins();
+	// 	x = initialX;
+	// 	y = initialY;
+	// 	//theta = initialTheta;
+	// 	this.level = level;
+	// 	fuel = fuelLevel(this.level);
+	// 	score = 0;
+	// 	numLives = 3;
+	// 	gameWon = false;
+	// 	fuelIntersect = 0;
+	// 	fuelY = initialFuelY;
 
-	}
+	// }
 
 	public int fuelLevel(int a) {
 		switch (a) {
@@ -442,32 +458,34 @@ public final class GameLogic extends JComponent implements KeyListener {
 		return 0;
 	}
 
-	public void nextLevel(int level) {
-		resetGame(level);
+	// public void nextLevel(int level) {
+	// 	resetGame(level);
 
-		switch (level) {
-		case 2 -> {
-                    // level =2;
-                    numLives = 3;
-                    fuel = initialFuel - 100;
-                }
-		case 3 -> {
-                    // level = 3;
-                    numLives = 3;
-                    fuel = initialFuel - 100;
-                }
+	// 	switch (level) {
+	// 	case 2 -> {
+    //                 // level =2;
+    //                 numLives = 3;
+    //                 fuel = initialFuel - 100;
+    //             }
+	// 	case 3 -> {
+    //                 // level = 3;
+    //                 numLives = 3;
+    //                 fuel = initialFuel - 100;
+    //             }
 
-		}
-		repaint();
-	}
+	// 	}
+	// 	repaint();
+	// }
 
 	protected class TimerCallback implements ActionListener {
 
         @Override
 		public void actionPerformed(ActionEvent e) {
 			shipTest.move();
+
 			repaint();
-			// System.out.println("xVel: " + xVelocity + " yVel: " + yVelocity);
+
+
 
 			if (explosionON == true) {
 				explosionTimer = explosionTimer + 1;
@@ -569,13 +587,13 @@ public final class GameLogic extends JComponent implements KeyListener {
 					}
 					//coinCollection.resetCoins();
 					level = level + 1;
-					nextLevel(level);
+					//nextLevel(level);
 				}
 			}
 		} else {
 			// r key
 			if (e.getKeyCode() == 82) {
-				resetGame(1);
+				//resetGame(1);
 				i = 0;
 			}
 		}

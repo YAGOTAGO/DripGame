@@ -25,9 +25,9 @@ public final class PlayerHealth {
         return hearts;
     }
 
-    public void takeDamage(){
-        health--;
-        hearts.poll();//remove one from queue
+    public int takeDamage(){
+        ExecuteGame.getInstance().getLogic().removeObjectFromDraw(hearts.poll());
+        return --health;
     }
 
     public int getHealth(){

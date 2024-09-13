@@ -2,6 +2,8 @@ import java.awt.Rectangle;
 
 public class Coin extends AnimatedGO implements IHitbox{
     Rectangle hitBox;
+    final int COIN_VALUE = 100;
+    boolean canCollide = true;
 
     public Coin(String folder, int x, int y) {
         super(folder, .5, x, y);
@@ -14,10 +16,14 @@ public class Coin extends AnimatedGO implements IHitbox{
     }
 
     @Override
-    public void onHit() {
-        //increase the score
-        //dont draw this anymore
-        System.out.println("COIN HIT");
+    public void onHit(Player player) {
+        ExecuteGame.getInstance().getLogic().updateScore(COIN_VALUE);
+        canDraw = canCollide = false;
+    }
+    
+    @Override   
+    public boolean canCollide() {
+        return canCollide;
     }
 
 }

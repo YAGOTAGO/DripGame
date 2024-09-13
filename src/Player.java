@@ -61,12 +61,7 @@ public final class Player extends GameObject implements IHitbox {
     public Rectangle getHitbox() {
         return hitBox; 
     }
-
-    @Override
-    public void onHit() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
+    
     public void setThrust(boolean on){
         thrust = on;
     }
@@ -74,5 +69,14 @@ public final class Player extends GameObject implements IHitbox {
     public PlayerHealth getPlayerHealth(){
         return health;
     }
+
+    @Override
+    public void onHit(Player player) {}
+
+    @Override
+    public boolean canCollide() {
+        return true;
+    }
+    
 
 }
