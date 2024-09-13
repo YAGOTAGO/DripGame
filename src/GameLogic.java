@@ -73,13 +73,12 @@ public final class GameLogic extends JComponent implements KeyListener {
 		// 	add(new LevelTwo(ship));
 		// }};
 
-		ship = new Player(250);
+		
 		Level levelOne = new LevelTwo(ship);
-
 		objectsToDraw = levelOne.getObjectDrawList();
 		collidables = levelOne.getCollidablesList();
 		movables = levelOne.getMovablesList();
-
+		ship = new Player(objectsToDraw, 250);
 		addKeyListener(this);
 		setFocusable(true);
 		timer.start();

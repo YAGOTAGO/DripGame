@@ -2,12 +2,14 @@
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Queue;
 
 public final class Player extends GameObject implements IHitbox {
     private final Rectangle hitBox;
     private final Fuel fuel;
     private final PlayerHealth health;
+    private Explosion explosion;
 
     //spawn pos
     private final int SPAWN_POS_X = 50;
@@ -27,7 +29,7 @@ public final class Player extends GameObject implements IHitbox {
     private double angle;
     private final double ANGLE_CHANGE = 15.0; 
     
-    public Player(int fuel){
+    public Player(List<GameObject> toDraw, int fuel){
         super(50, 300); 
         this.fuel = new Fuel(fuel);
         hitBox = new Rectangle(SPAWN_POS_X, SPAWN_POS_Y, WIDTH, HEIGHT);
@@ -35,15 +37,18 @@ public final class Player extends GameObject implements IHitbox {
         flameOff = ImageHelper.getBufferedImage("ship", "spaceship.png");
         movement = new PlayerMovement();
         health = new PlayerHealth();
-    }
+        explosion = new Explosion(xPos, yPos);
+        toDraw.add(explosion);
+        }
+
     @Override
     public Image display() {
         return (fuel.hasFuel() && thrust) ? flameOn : flameOff;
     }
 
     public void respawn(){
+        explosion.trigger(xPos, yPos);
         if(health.takeDamage() >=-100){
-            //do respawn stuff
             angle = 0;
             fuel.resetFuel();
             changePosition(SPAWN_POS_X, SPAWN_POS_Y);
