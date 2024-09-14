@@ -6,7 +6,7 @@
 *Coding*: Tiago Davies
 
 ## Coding
-Refractored as Senior using the code in wrote in Freshman year. New code has better OOP and also features better design principles such as composition over inheritance (in the gameobject design), and single responsibility classes. In the future the flyweight pattern could be applied to the coin animation array to save memory.
+Refractored codebase I wrote in Freshman year. New code has better OOP and also features better design principles such as composition over inheritance (in the gameobject design), and single responsibility classes. In the future the flyweight pattern could be applied to the coin animation array to save memory.
 
 ## Build Instructions:
 Compile **ALL** classes and Run the ExecuteGame.java <br>
