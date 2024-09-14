@@ -14,7 +14,7 @@ public final class PlayerHealth {
             add(new SpriteGO("UI", "heart.png", 250, 80));
         }};
     }
-    
+
     public Queue<GameObject> getHearts(){
         return hearts;
     }

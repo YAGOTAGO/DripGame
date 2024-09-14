@@ -10,7 +10,7 @@ public class LevelThree extends Level{
     Player ship;
 
     public LevelThree(){
-        ship = new Player(200);
+        ship = new Player(300);
         registerGameObject(ship);
         setBackground(ship);
         registerGameObject(new Chest(1000, 870, 524));
