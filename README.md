@@ -11,7 +11,7 @@ Refractored codebase I wrote in Freshman year. New code has better OOP and also 
 ## Build Instructions:
 Compile **ALL** classes and Run the Main.java <br>
 javac -d bin *.java <br>
-java -cp bin ExecuteGame
+java -cp bin Main
 
 ## Controls:
 Press [s] to start. 
