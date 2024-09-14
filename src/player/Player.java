@@ -22,6 +22,10 @@ public final class Player extends GameObject implements IHitbox, IParentGO {
     private final Explosion explosion;
     private final Fuel fuel;
 
+    private int score = 0;
+    private boolean gameLost = false;
+    private boolean nextLevel = false;
+
     public Player(int fuel){
         super(50, 300); 
         this.fuel = new Fuel(fuel);
@@ -43,7 +47,7 @@ public final class Player extends GameObject implements IHitbox, IParentGO {
             fuel.resetFuel();
             movement.reset();
         }else{
-            //lose the game
+            gameLost = true;
         }
     }
 
@@ -69,14 +73,24 @@ public final class Player extends GameObject implements IHitbox, IParentGO {
         yPos = y;
         HIT_BOX.setLocation(x + 16, y + 10); //slight offset to line up better
     }
-    
+    public void changeScore(int amount) {
+        score += amount;
+    }
+
+    public void nextLevel(){
+        nextLevel = true;
+    }
+
     //GETTERS
     @Override
     public Rectangle getHitbox() { return HIT_BOX;  }
     public int getFuelAmount(){ return fuel.getFuel(); }
     public Fuel getFuel() { return fuel; }
     public double getAngle() { return movement.getAngle(); }
-    
+    public int getScore(){ return score; }
+    public boolean isGameLost(){ return gameLost; }
+    public boolean isNextLevel(){ return nextLevel; }
+
     @Override
     public List<GameObject> getChildObjectsToDraw() {
         List<GameObject> list = new ArrayList<>();

@@ -2,10 +2,12 @@ package levels;
 
 import base.*;
 import gameobjects.*;
-import java.awt.Graphics;
-import java.awt.Rectangle;
+
+import java.awt.*;
 import java.awt.image.ImageObserver;
 import java.util.*;
+import java.util.List;
+
 import player.Player;
 
 public abstract class Level {
@@ -91,12 +93,20 @@ public abstract class Level {
 
         //check collisions
         for(IHitbox curr : COLLIDABLES){
-			Rectangle r = curr.getHitbox();
-			g.drawRect(r.x, r.y, r.width, r.height);
+			//Rectangle r = curr.getHitbox();
+			//g.drawRect(r.x, r.y, r.width, r.height);
 			if(curr.canCollide() && curr.intersects(getShip())){
 				curr.onHit(getShip());
 			}
 		}
+
+        // score, level and fuel
+        Font newFont = new Font("Helvetica", Font.BOLD, 30);
+        g.setFont(newFont);
+        g.drawString("Score: " + String.valueOf(getShip().getScore()), 150, 60);
+        newFont = new Font("Helvetica", Font.BOLD, 14);
+        g.setFont(newFont);
+        g.drawString("FUEL: " + getShip().getFuelAmount(), 55, 37);
     }
 
 }

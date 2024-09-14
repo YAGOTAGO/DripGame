@@ -1,12 +1,13 @@
 package levels;
 
 import java.util.ArrayList;
+
+import base.SpriteGO;
 import player.Player;
 import gameobjects.*;
 
 public final class LevelOne extends Level{
     Player ship;
-
     public LevelOne(){
         ship = new Player(250);
         registerGameObject(ship);
@@ -39,6 +40,7 @@ public final class LevelOne extends Level{
             add(new Coin(900, 400));
             add(new Coin(900, 550));
         }});
+        registerGameObject(new SpriteGO("UI", "fuelCanister.png", 60, 42));
     }
 
     @Override

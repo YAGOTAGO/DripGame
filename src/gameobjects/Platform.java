@@ -22,8 +22,7 @@ public class Platform extends AnimatedGO implements IHitbox {
     @Override
     public void onHit(Player player) {
         if(player.getAngle() == 0){
-            //game call next level
-            System.out.println("next level");
+            player.nextLevel();
         }else{
             player.respawn();
         }

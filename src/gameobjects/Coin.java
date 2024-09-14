@@ -4,7 +4,6 @@ import base.AnimatedGO;
 import base.IHitbox;
 import player.Player;
 import java.awt.Rectangle;
-import game.ExecuteGame;
 
 public class Coin extends AnimatedGO implements IHitbox {
     Rectangle hitBox;
@@ -24,7 +23,7 @@ public class Coin extends AnimatedGO implements IHitbox {
     
     @Override
     public void onHit(Player player) {
-        ExecuteGame.getInstance().getLogic().updateScore(COIN_VALUE);
+        player.changeScore(COIN_VALUE);
         canDraw = canCollide = false;
     }
 

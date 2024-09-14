@@ -14,7 +14,6 @@ public class LevelThree extends Level{
         registerGameObject(ship);
         setBackground(ship);
         registerGameObject(new Chest(1000, 870, 524));
-
         registerGameObject(new ArrayList<>(){{
             //pattern at the start
             add(new Coin(250, 400));

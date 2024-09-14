@@ -2,7 +2,6 @@ package gameobjects;
 
 import base.AnimatedGO;
 import base.IHitbox;
-import game.ExecuteGame;
 import player.Player;
 import java.awt.*;
 
@@ -23,7 +22,7 @@ public class Chest extends AnimatedGO implements IHitbox {
 
     @Override
     public void onHit(Player player) {
-        ExecuteGame.getInstance().getLogic().updateScore(SCORE);
+        player.changeScore(SCORE);
         canDraw = false;
         canCollide = false;
     }

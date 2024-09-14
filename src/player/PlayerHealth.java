@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import base.*;
 public final class PlayerHealth {
-    
     int health = 3;
     Queue<GameObject> hearts;
     
@@ -15,13 +14,13 @@ public final class PlayerHealth {
             add(new SpriteGO("UI", "heart.png", 250, 80));
         }};
     }
-
+    
     public Queue<GameObject> getHearts(){
         return hearts;
     }
 
     public int takeDamage(){
-        //hearts.poll().canDraw = false; //may cause issues with reset
+        hearts.poll().setDraw(false);
         return --health;
     }
 

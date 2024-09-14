@@ -3,7 +3,7 @@ package base;
 import java.awt.Image;
 
 public abstract class GameObject{
-    protected  boolean canDraw = true;
+    protected boolean canDraw = true;
     protected int xPos;
     protected int yPos;
     
